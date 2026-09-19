@@ -15,5 +15,5 @@
 电磁学计算、代数值、写步骤只用 `solution`。算法课若要「正确性 / 复杂度」小标题，
 写在 `preamble.tex`，不要改类文件。
 
-身份是占位符，先改 `identity.tex`。校徽用 `\logo{\includegraphics[width=0.62\textwidth]{cover}}`，
-图放课程目录 `figures/`。标题色默认藏青（`headingcolor=acadhead`），打印加类选项 `print`。
+身份是占位符，先改 `identity.tex`。封面校徽示例是 `figures/cover.png`，换成自己的图即可。
+标题色默认藏青（`headingcolor=acadhead`），打印加类选项 `print`。

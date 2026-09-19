@@ -60,7 +60,7 @@ $\varepsilon_0$、$\vect{B}$ 等（`acadmath` 已有 `\vect` `\dd`）。
 
 - `headingcolor=acadhead`：节标题藏青。打印加类选项 `print`。
 - `\logo{...}` 写在 `identity.tex`。有校徽时封面不再重复学校全称。
-- 校徽放课程目录 `figures/`。
+- 模板自带 `figures/cover.png` 打样，换成自己的图即可。
 
 ## 文件分工
 
