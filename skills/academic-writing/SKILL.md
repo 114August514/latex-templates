@@ -39,7 +39,7 @@ description: >
 |---|---|---|
 | 期刊/会议论文、投稿、论文某一节 | **paper** | 读 `references/paper.md` |
 | 实验报告、技术报告、课程大作业、结课论文 | **report** | 读 `references/report.md` |
-| 连续课程作业（多次 hwN） | **report**（`homework` 模板） | 读 `references/report.md` |
+| 连续课程作业（多次 hwN） | **homework** | 读 `references/homework.md` |
 | 组会汇报、会议 oral | **slides**（`beamer` 模板） | 读 `references/presenting.md` + `slides.md` |
 | 开题 / 中期 / 学位答辩 | **slides**（`defense` 模板） | 读 `references/presenting.md` + `slides.md` |
 
@@ -198,6 +198,7 @@ TeX 环境的安装见仓库 README「安装依赖」，不要假设某一种包
 - `references/writing.md` —— 论证逻辑与文字
 - `references/paper.md` —— 论文流水线
 - `references/report.md` —— 报告流水线
+- `references/homework.md` —— 课程作业：solution / proof / 复杂度怎么分工
 - `references/presenting.md` —— 演示内容设计与答辩策略
 - `references/slides.md` —— 幻灯片模板用法
 - `references/standards.md` —— 排版规范速查

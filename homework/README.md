@@ -11,11 +11,12 @@
 
 新增作业：`uv run python new-assignment.py hw2`。已有目录会拒绝覆盖，也不会复制旧答案。
 
-写法：`\problem[20]{题目}`，解答放进 `solution` 环境，使用 `\correctness`、
-`proof` 和 `\complexity` 组织论证。算法环境默认可浮动，确需紧随题目时再用 `[H]`。
-无编号公式用 `\[ ... \]`，多行推导用 `align*`。通用复杂度记号包含
-`\bigO{n}`、`\bigOmega{n}`、`\bigTheta{n}`。
+`solution` 包**整道题的作答**；`proof` 只包**一条要证的命题**（正确性、下界、恒等式）。
+解释算法、算一个数、数循环次数，不要套 `proof`。正确性用 `\correctness` 再接 `proof`；
+复杂度用 `\complexity`，除非题目要求「证明 $T(n)=\ldots$」才再套 `proof`。
 
-模板中的身份均为占位符，首次使用先填写。标题颜色可设 `headingcolor=acadhead`，
-打印用 `print`。封面字段宽度可在 preamble 中以
-`\renewcommand{\coverlabelwidth}{5em}`、`\renewcommand{\coverfieldwidth}{12em}` 调整。
+算法环境默认可浮动，要紧随题目用 `[H]`。无编号公式用 `\[ ... \]`，多行推导用 `align*`。
+复杂度记号：`\bigO{n}`、`\bigOmega{n}`、`\bigTheta{n}`。
+
+身份是占位符，先改 `identity.tex`。校徽用 `\logo{\includegraphics[width=0.62\textwidth]{cover}}`，
+图放课程目录 `figures/`。标题色默认藏青（`headingcolor=acadhead`），打印加类选项 `print`。

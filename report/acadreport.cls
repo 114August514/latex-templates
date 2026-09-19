@@ -176,6 +176,9 @@
 
 \newcommand{\makecover}{%
   \hypersetup{pageanchor=false}%
+  \acad@iftype{course}{%
+    \newgeometry{left=1.75cm, right=1.75cm, top=1.55cm, bottom=1.55cm}%
+  }{}%
   \begin{titlepage}
   \thispagestyle{empty}
   \centering
@@ -202,22 +205,23 @@
     \endgroup
   }{%
     \acad@iftype{course}{%
-      %%% —— 课程报告封面（简化）——
-      \vspace{2.5cm}
-      \ifdefempty{\acad@school}{}{{\zihao{2}\heiti\acad@school\par}\vspace{0.5em}}%
-      \ifdefempty{\acad@department}{}{{\zihao{3}\heiti\acad@department\par}}%
-      \vspace{3.0cm}
-      \ifdefempty{\acad@course}{}{{\zihao{3}\songti\acad@course\par}\vspace{1.2em}}%
-      {\zihao{2}\heiti\@title\par}%
-      \ifdefempty{\acad@subtitle}{}{\vspace{0.8em}{\zihao{4}\songti\acad@subtitle\par}}%
-      \vspace{2.0cm}
-      \begingroup\zihao{4}\songti
-        \acad@row{姓\qquad 名}{Name}{\acad@studentname}%
-        \acad@row{学\qquad 号}{Student ID}{\acad@studentid}%
-        \acad@row{院\qquad 系}{Department}{\acad@department}%
-        \acad@row{课程名称}{Course}{\acad@course}%
-        \acad@row{授课老师}{Instructor}{\acad@instructor}%
-        \acad@row{日\qquad 期}{Date}{\acad@submitdate}%
+      %%% —— 课程作业封面 ——
+      % 校徽在 \makecover 开头统一输出。有图时不再排学校全称；院系只在信息栏出现。
+      \ifdefempty{\acad@logo}{%
+        \vspace{2.2cm}%
+        \ifdefempty{\acad@school}{}{{\zihao{2}\heiti\acad@school\par}\vspace{0.5em}}%
+        \vspace{1.6cm}%
+      }{\vspace{1.4cm}}%
+      {\zihao{1}\heiti\@title\par}%
+      \ifdefempty{\acad@subtitle}{}{\vspace{0.55em}{\zihao{4}\songti\acad@subtitle\par}}%
+      \vspace{3.0cm}%
+      \begingroup\zihao{3}\songti
+        \acad@row[7.4cm]{姓\qquad 名}{Name}{\acad@studentname}%
+        \acad@row[7.4cm]{学\qquad 号}{Student ID}{\acad@studentid}%
+        \acad@row[7.4cm]{院\qquad 系}{Department}{\acad@department}%
+        \acad@row[7.4cm]{课程名称}{Course}{\acad@course}%
+        \acad@row[7.4cm]{授课老师}{Instructor}{\acad@instructor}%
+        \acad@row[7.4cm]{日\qquad 期}{Date}{\acad@submitdate}%
       \endgroup
     }{%
       %%% —— 实验报告封面（默认，type=lab）——
@@ -245,8 +249,9 @@
       \endgroup
     }%
   }%
-  \vfill
+  \acad@iftype{course}{}{\vfill}%
   \end{titlepage}
+  \acad@iftype{course}{\restoregeometry}{}%
   \setcounter{page}{1}%
   \hypersetup{pageanchor=true}%
 }
