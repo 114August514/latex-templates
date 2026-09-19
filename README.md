@@ -35,7 +35,7 @@ latex-templates/
 ├── Makefile                  一键构建五套模板
 ├── homework/                 连续作业：identity.tex + hwN/
 ├── scripts/new-project.py    生成自包含项目
-├── skills/academic-writing/  配套写作 skill（不绑定某一助手）
+├── skills/academic-writing/  配套写作 skill
 ├── VSCODE.md                 编译与双向跳转说明
 │
 ├── common/                   模板间共享
@@ -175,7 +175,7 @@ Make 一般随 Xcode Command Line Tools 提供。
 想更好看的中文，可改 `fontset=noto`（需系统 Noto CJK；等宽可用 Sarasa Gothic）：
 
 | 系统 | Noto CJK |
-|---|---|
+| --- | --- |
 | Arch | `sudo pacman -S noto-fonts-cjk ttf-sarasa-gothic` |
 | Ubuntu / Debian | `sudo apt install fonts-noto-cjk` |
 | Windows / macOS | 从 [Google Fonts Noto CJK](https://github.com/notofonts/noto-cjk) 安装 |
