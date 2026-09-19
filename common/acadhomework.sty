@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}[2021/06/01]
-\ProvidesPackage{acadhomework}[2026/09/20 Homework structure and notation]
+\ProvidesPackage{acadhomework}[2026/09/20 Homework structure]
 \RequirePackage{needspace}
-% 作业按题分节：「问题 1 …」；字号与标题色跟课程封面那套藏青标题一致。
+% 按题分节：「问题 1 …」。课程专用记号写在 preamble.tex，不要堆进本文件。
 \ctexset{
   section/name={问题,},
   section/format=\zihao{-2}\heiti\raggedright\color{\acad@headingcolor},
@@ -9,11 +9,5 @@
 \newcommand{\problem}[2][]{%
   \Needspace{5\baselineskip}%
   \if\relax\detokenize{#1}\relax\section{#2}\else\section{#2（#1 分）}\fi}
-% solution = 整道题的作答容器；proof = 其中一条需要证明的命题（见 homework.md）
 \newenvironment{solution}{\par\medskip\noindent\textbf{解答}\par\nobreak}{\par\medskip}
-\newcommand{\correctness}{\subsubsection*{正确性证明}}
-\newcommand{\complexity}{\subsubsection*{复杂度分析}}
-\newcommand{\bigO}[1]{O\!\left(#1\right)}
-\newcommand{\bigOmega}[1]{\Omega\!\left(#1\right)}
-\newcommand{\bigTheta}[1]{\Theta\!\left(#1\right)}
 \endinput

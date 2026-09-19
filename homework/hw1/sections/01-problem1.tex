@@ -1,28 +1,15 @@
 % !TeX root = ../main.tex
-%%% 主旨：给出算法，再证明正确性、分析复杂度。
-%%% solution 包整道解答；proof 只包「正确性」那条命题。详见 homework.md。
-\problem[20]{求和算法}
+%%% 计算用 solution；题目要证明时在解答里再套 proof。
+\problem[10]{前 n 项和}
 \label{sec:sum}
-计算数组的元素之和，说明正确性和复杂度。
+求 $1+2+\cdots+n$，并证明公式。
 \begin{solution}
-\begin{algorithm}[htbp]
-  \caption{数组求和}\label{alg:sum}
-  \begin{algorithmic}[1]
-    \Require 数组 $A[1\ldots n]$
-    \Ensure 元素之和 $s$
-    \State $s\gets 0$
-    \For{$i=1,\ldots,n$}
-      \State $s\gets s+A[i]$
-    \EndFor
-    \State \Return $s$
-  \end{algorithmic}
-\end{algorithm}
-\correctness
+公式为 $\dfrac{n(n+1)}{2}$。
 \begin{proof}
-完成第 $i$ 次迭代后，$s=\sum_{j=1}^{i} A[j]$。初始时成立，
-每次迭代保持此性质，结束时得到全部元素之和。
+对 $n$ 归纳。$n=1$ 时两边都是 $1$。
+假设对 $n=k$ 成立，则
+\[
+  1+\cdots+(k+1)=\frac{k(k+1)}{2}+(k+1)=\frac{(k+1)(k+2)}{2}.
+\]
 \end{proof}
-\complexity
-\cref{alg:sum} 的时间复杂度为 $\bigTheta{n}$，额外空间为 $\bigO{1}$。
-算法分析的背景可参阅\cite{cormen2022}。
 \end{solution}

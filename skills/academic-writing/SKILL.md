@@ -198,7 +198,7 @@ TeX 环境的安装见仓库 README「安装依赖」，不要假设某一种包
 - `references/writing.md` —— 论证逻辑与文字
 - `references/paper.md` —— 论文流水线
 - `references/report.md` —— 报告流水线
-- `references/homework.md` —— 课程作业：solution / proof / 复杂度怎么分工
+- `references/homework.md` —— 课程作业：解答还是证明
 - `references/presenting.md` —— 演示内容设计与答辩策略
 - `references/slides.md` —— 幻灯片模板用法
 - `references/standards.md` —— 排版规范速查
