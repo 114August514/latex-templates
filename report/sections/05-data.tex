@@ -1,0 +1,122 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 数据记录与处理
+%%%
+%%% 这一节演示实验报告的核心技能——**规范地报告带不确定度的数据**：
+%%%   · 数值一律走 siunitx：\num{93.21(14)} 会排成 93.21 ± 0.14
+%%%     （类文件里设了 separate-uncertainty = true）
+%%%   · 有效数字保留到不确定度的第一位非零数字（GB/T 3101、JJF 1059.1）
+%%%   · 数字列用 S 列按小数点对齐
+%%%   · 原始数据放附录，正文只放处理后的结果
+%%%   · 表题在表**上方**，图题在图**下方**
+%%% ---------------------------------------------------------------------------
+\section{数据记录与处理}
+\label{sec:data}
+
+\subsection{原始记录}
+\label{sec:data:raw}
+
+15 次运行的逐次测试准确率见\cref{tab:raw}，完整的逐 epoch 曲线数据见
+\cref{app:rawdata}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{各优化器 5 次独立运行的测试准确率}
+  \label{tab:raw}
+  \begin{tabular}{l *{5}{S[table-format=2.2]}}
+    \toprule
+    \multirow{2}{*}{优化器} & \multicolumn{5}{c}{测试准确率 / \%} \\
+    \cmidrule(lr){2-6}
+      & {种子 0} & {种子 1} & {种子 2} & {种子 3} & {种子 4} \\
+    \midrule
+    SGD-M & 94.83 & 94.61 & 95.02 & 94.74 & 94.90 \\
+    Adam  & 93.15 & 93.42 & 93.08 & 93.31 & 93.09 \\
+    AdamW & 94.55 & 94.71 & 94.38 & 94.66 & 94.49 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{数据处理}
+\label{sec:data:process}
+
+以 SGD-M 为例，按\cref{eq:mean-std}：
+
+\begin{equation}
+  \label{eq:sgdm-mean}
+  \bar{x}\subtext{SGD}
+    = \frac{94.83 + 94.61 + 95.02 + 94.74 + 94.90}{5}
+    = \qty{94.820}{\percent},
+\end{equation}
+
+\begin{equation}
+  \label{eq:sgdm-std}
+  s\subtext{SGD} = \sqrt{\frac{1}{4}\sum_{i=1}^{5}
+    \left(x_i - \bar{x}\subtext{SGD}\right)^2} = \qty{0.152}{\percent},
+\end{equation}
+
+由\cref{eq:uncertainty} 得平均值的标准不确定度
+
+\begin{equation}
+  \label{eq:sgdm-u}
+  u(\bar{x}\subtext{SGD}) = \frac{s\subtext{SGD}}{\sqrt{5}}
+    = \qty{0.068}{\percent} \approx \qty{0.07}{\percent}.
+\end{equation}
+
+按有效数字规则，结果表述为 $\qty{94.82(7)}{\percent}$。三种优化器的
+汇总结果见\cref{tab:summary}。
+
+\begin{table}[htbp]
+  \centering
+  \caption{各优化器的性能汇总（$n = 5$，误差为平均值的标准不确定度）}
+  \label{tab:summary}
+  \begin{threeparttable}
+    \begin{tabular}{l
+                    S[separate-uncertainty, table-format=2.2(2)]
+                    S[separate-uncertainty, table-format=2.1(2)]
+                    S[separate-uncertainty, table-format=3.0(2)]}
+      \toprule
+      {优化器} & {测试准确率 / \%} & {达到 90\% 的轮数} & {单轮耗时 / s} \\
+      \midrule
+      SGD-M & 94.82(7)  & 31.6(9)  & 18(1) \\
+      Adam  & 93.21(7)  & 18.2(6)  & 19(1) \\
+      AdamW & 94.56(6)  & 19.4(7)  & 19(1) \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+      \item 括号内为不确定度在末位的值，如 94.82(7) 表示
+        $\qty{94.82}{\percent} \pm \qty{0.07}{\percent}$。
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{收敛曲线}
+\label{sec:data:curve}
+
+三种优化器的验证准确率曲线见\cref{fig:curve}，阴影为 5 次运行的
+$\pm 1$ 标准差范围。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.47\linewidth}
+    \centering
+    \placeholder{\linewidth}{4.0cm}{figures/acc-curve.pdf}
+    \caption{验证准确率}
+    \label{fig:curve-acc}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.47\linewidth}
+    \centering
+    \placeholder{\linewidth}{4.0cm}{figures/loss-curve.pdf}
+    \caption{训练损失}
+    \label{fig:curve-loss}
+  \end{subfigure}
+  \caption{三种优化器的收敛曲线（阴影为 $\pm 1$ 标准差）}
+  \label{fig:curve}
+\end{figure}
+
+\begin{caution}
+  作图时坐标轴必须标注「量 / 单位」，如 \emph{准确率 / \%}、\emph{时间 / s}
+  （GB/T 3101 推荐斜杠形式）。图要导出成矢量格式（PDF），
+  matplotlib 用 \lstinline|plt.savefig('x.pdf')| 即可。
+\end{caution}

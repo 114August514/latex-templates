@@ -1,0 +1,17 @@
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
+my $course = dirname(abs_path($rc_files_read[-1]));
+$pdf_mode = 5;
+$xelatex = 'xelatex -synctex=1 -halt-on-error -file-line-error -interaction=nonstopmode %O %S';
+$out_dir = 'build';
+$bibtex_use = 2;
+$ENV{'TEXINPUTS'} = ".:$course:$course/../common:" . ($ENV{'TEXINPUTS'} // '');
+$ENV{'BIBINPUTS'} = '.:' . ($ENV{'BIBINPUTS'} // '');
+$clean_ext = 'bbl run.xml synctex.gz xdv nav snm vrb';
+if ($^O eq 'MSWin32') {
+  $pdf_previewer = 'start %S';
+} elsif ($^O eq 'darwin') {
+  $pdf_previewer = 'open %S';
+} else {
+  $pdf_previewer = 'xdg-open %S';
+}

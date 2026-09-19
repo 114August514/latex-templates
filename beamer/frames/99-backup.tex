@@ -1,0 +1,73 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 备用页
+%%%
+%%% main.tex 里的 \appendix 已经让这些帧不计入页脚的总页数，
+%%% 所以听众看到的 "12/18" 不会把备用页算进去。
+%%%
+%%% 放什么：预判会被问到的问题的答案——完整推导、完整对比表、
+%%% 失败案例、超参数、与某篇相关工作的区别。
+%%% 提问环节直接翻过来，比现场画图有说服力得多。
+%%% ---------------------------------------------------------------------------
+
+\begin{frame}[plain, noframenumbering]
+  \vfill
+  \centering
+  {\usebeamerfont{section page}\usebeamercolor[fg]{section page} 备用页\par}
+  \vskip 0.9em
+  {\usebeamercolor[fg]{structure}\rule{0.14\paperwidth}{0.8pt}}
+  \vfill
+\end{frame}
+
+\begin{frame}{备用：方差上界的紧性}
+  对 $g \in (0,1)$，由 $\Var[\featmap_l'] = g^2\sigma_1^2 + (1-g)^2\sigma_2^2$
+  进一步可得下界
+  \begin{equation*}
+    \Var\!\left[\featmap_l'\right]
+      \ge \frac{\sigma_1^2 \sigma_2^2}{\sigma_1^2 + \sigma_2^2},
+  \end{equation*}
+  等号在 $g^{*} = \sigma_2^2 / (\sigma_1^2 + \sigma_2^2)$ 处取得。
+
+  \vspace{0.8em}
+  \begin{block}{这说明什么}
+    门控不仅不放大方差，在中间取值处实际起到了\alert{方差收缩}的作用——
+    这解释了为什么加入门控后训练曲线更平滑。
+  \end{block}
+\end{frame}
+
+\begin{frame}{备用：完整超参数}
+  \begin{table}
+    \centering\small
+    \begin{tabular}{l l}
+      \toprule
+      {超参数} & {取值} \\
+      \midrule
+      优化器             & SGD（动量 \num{0.9}） \\
+      初始学习率         & \num{0.01}，余弦退火，预热 \num{500} 步 \\
+      权重衰减           & \num{1e-4} \\
+      批大小             & 16（4 卡 A100，每卡 4） \\
+      训练轮数           & \qty{36}{\epoch} \\
+      输入尺寸           & $1024 \times 1024$，重叠 \qty{200}{\pixel} \\
+      门控压缩比 $r$     & 16 \\
+      损失权重 $\lambda$ & \num{1.0} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{备用：失败案例}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \centering
+      \placeholder{\linewidth}{3.8cm}{figures/failure-case.pdf}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{itemize}
+        \setlength{\itemsep}{0.7em}
+        \item 云层遮挡下门控权重失去区分度，退化为均匀融合
+        \item 极端长宽比目标（如跑道）仍存在定位偏差
+        \item 这两类场景在测试集中占 \qty{4.1}{\percent}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

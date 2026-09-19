@@ -1,0 +1,136 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 方法
+%%%
+%%% 这一节演示了公式、定理、算法的规范写法，改写时请保留这些约定：
+%%%   · 变量斜体、单位正体、函数名正体（GB/T 3101，见 ../../STANDARDS.md §1.3）
+%%%   · 微分写 \dd x，自然常数写 \e，虚数单位写 \ii
+%%%   · 说明性下标写 \subtext{max}，不要写 _{max}
+%%%   · 矢量矩阵用 \vect{} \mat{}，不要用 \mathbf 或 \boldsymbol
+%%%   · 每个公式都给 \label，引用时用 \cref
+%%% ---------------------------------------------------------------------------
+\section{方法}
+\label{sec:method}
+
+\subsection{总体结构}
+\label{sec:method:overview}
+
+设骨干网络输出的层级特征为 $\setof{\featmap_l}_{l=2}^{5}$，其中 $\featmap_l \in
+\R^{C \times H_l \times W_l}$，$H_l = H/2^{\,l}$。\ourmethod{} 在自顶向下
+路径的每一次融合处替换原有的逐元素相加，代之以\cref{sec:method:gate} 定义的
+门控算子。整体结构如\cref{fig:architecture} 所示。
+
+\subsection{跨层注意力门控}
+\label{sec:method:gate}
+
+记上层特征经上采样对齐后为 $\tilde{\featmap}_{l+1}$。门控权重
+$\mat{G}_l \in [0,1]^{H_l \times W_l}$ 由两层特征的通道统计量共同决定：
+
+\begin{equation}
+  \label{eq:gate}
+  \mat{G}_l = \sigma\!\left(
+    \mat{W}_2 \relu\!\left(
+      \mat{W}_1 \left[ \operatorname{GAP}(\featmap_l) \,\Vert\,
+                       \operatorname{GAP}(\tilde{\featmap}_{l+1}) \right]
+    \right)
+  \right),
+\end{equation}
+
+式中 $\sigma(\cdot)$ 为 Sigmoid 函数，$\operatorname{GAP}$ 为全局平均池化，
+$\Vert$ 表示通道维拼接，$\mat{W}_1 \in \R^{C/r \times 2C}$ 与
+$\mat{W}_2 \in \R^{C \times C/r}$ 为可学习参数，压缩比取 $r = 16$。
+
+融合结果为
+
+\begin{equation}
+  \label{eq:fusion}
+  \featmap_l' = \mat{G}_l \odot \featmap_l
+              + (\mathbf{1} - \mat{G}_l) \odot \mathcal{D}(\tilde{\featmap}_{l+1}),
+\end{equation}
+
+其中 $\odot$ 为逐元素乘，$\mathcal{D}(\cdot)$ 为\cref{sec:method:align}
+中的可变形对齐算子。由\cref{eq:fusion} 可见，当 $\mat{G}_l \to \mathbf{1}$ 时
+融合退化为只保留浅层特征，当 $\mat{G}_l \to \mathbf{0}$ 时退化为标准
+特征金字塔，因此本文方法是后者的严格推广。
+
+\subsection{可变形对齐}
+\label{sec:method:align}
+
+上采样引入的偏移量 $\Delta \vect{p}$ 由 $3 \times 3$ 卷积从拼接特征回归：
+
+\begin{equation}
+  \label{eq:offset}
+  \mathcal{D}(\tilde{\featmap})(\vect{p})
+    = \sum_{k=1}^{9} w_k \cdot
+      \tilde{\featmap}\!\left(\vect{p} + \vect{p}_k + \Delta \vect{p}_k\right),
+\end{equation}
+
+$\vect{p}_k$ 为标准卷积核的采样网格，$w_k$ 为核权重。
+
+\subsection{理论分析}
+\label{sec:method:theory}
+
+下面说明门控融合不会放大特征的方差，这是训练稳定性的必要条件。
+
+\begin{assumption}
+  \label{assum:indep}
+  $\featmap_l$ 与 $\mathcal{D}(\tilde{\featmap}_{l+1})$ 在各空间位置上
+  互不相关，且方差分别为 $\sigma_1^2$ 与 $\sigma_2^2$。
+\end{assumption}
+
+\begin{theorem}[方差不增]
+  \label{thm:variance}
+  在\cref{assum:indep} 下，对任意 $\mat{G}_l \in [0,1]^{H_l \times W_l}$，
+  由\cref{eq:fusion} 给出的融合特征满足
+  \begin{equation}
+    \label{eq:var-bound}
+    \Var\!\left[\featmap_l'\right] \le \max\setof{\sigma_1^2, \sigma_2^2}.
+  \end{equation}
+\end{theorem}
+
+\begin{proof}
+  记 $g \in [0,1]$ 为 $\mat{G}_l$ 在某一位置的取值。由独立性，
+  \begin{equation}
+    \label{eq:var-expand}
+    \Var\!\left[\featmap_l'\right]
+      = g^2 \sigma_1^2 + (1-g)^2 \sigma_2^2 .
+  \end{equation}
+  右端是关于 $g$ 的二次函数，在 $[0,1]$ 上的最大值只可能在端点取得，
+  分别为 $\sigma_1^2$ 与 $\sigma_2^2$，即得\cref{eq:var-bound}。
+\end{proof}
+
+\begin{remark}
+  \label{rmk:relax}
+  \cref{assum:indep} 的独立性在实践中并不严格成立，但实验中未观察到
+  训练发散，说明该界在相关性较弱时仍具指导意义。
+\end{remark}
+
+\subsection{训练流程}
+\label{sec:method:train}
+
+完整的训练流程见\cref{alg:training}。
+
+\begin{algorithm}[htbp]
+  \caption{\ourmethod{} 的训练流程}
+  \label{alg:training}
+  \begin{algorithmic}[1]
+    \Require 训练集 $\mathcal{S}$，骨干网络参数 $\params\subtext{bb}$，
+             学习率 $\eta$，总轮数 $T$
+    \Ensure  收敛后的模型参数 $\params^{*}$
+    \State 用 ImageNet 预训练权重初始化 $\params\subtext{bb}$，其余参数用
+           Kaiming 初始化
+    \For{$t \gets 1$ \textbf{to} $T$}
+      \ForAll{小批量 $\mathcal{B} \subset \mathcal{S}$}
+        \State 前向计算层级特征 $\setof{\featmap_l}$
+        \For{$l \gets 4$ \textbf{down to} $2$}
+          \State 按\cref{eq:gate} 计算门控权重 $\mat{G}_l$
+          \State 按\cref{eq:fusion} 得到融合特征 $\featmap_l'$
+        \EndFor
+        \State 计算总损失 $\loss = \loss\subtext{cls} + \lambda \loss\subtext{reg}$
+        \State $\params \gets \params - \eta \nabla_{\params} \loss$
+      \EndFor
+      \State 按余弦策略更新 $\eta$
+    \EndFor
+    \State \Return $\params^{*} \gets \argmin_{\params} \loss$
+  \end{algorithmic}
+\end{algorithm}

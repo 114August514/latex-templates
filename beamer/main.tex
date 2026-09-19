@@ -1,0 +1,65 @@
+%%% ---------------------------------------------------------------------------
+%%% main.tex —— 主控文件
+%%%
+%%% 这个文件只负责「装配」，不放内容、不放样式。
+%%%   要改样式  → beamer{color,font,inner,outer}themeAcad.sty
+%%%   要改元数据 → setup.tex
+%%%   要加宏包/自定义命令 → preamble.tex
+%%%   要写内容  → frames/*.tex
+%%%
+%%% 编译：make          （或 latexmk main.tex）
+%%%      make handout   讲义版：忽略所有 \pause，一帧一页
+%%%      make notes     带演讲备注的双屏版
+%%% ---------------------------------------------------------------------------
+\documentclass[
+  aspectratio = 169,   % 16:9，现在会场与线上会议的默认比例
+  11pt,
+  UTF8,
+  fontset = fandol,    % 见下面 \usetheme 的说明，两处必须配套
+  % handout,           % 讲义模式（由 make handout 自动加上，不用手改）
+]{ctexbeamer}
+
+%%% 主题选项 fontset 必须与上面 \documentclass 的 fontset 配套：
+%%%   \documentclass[fontset=fandol]  ←→  \usetheme[fontset=fandol]  （零配置）
+%%%   \documentclass[fontset=none]    ←→  \usetheme[fontset=noto]    （更好看）
+\usetheme[
+  lang      = zh,       % zh | en
+  fontset   = fandol,   % fandol | noto | none
+  mathstyle = iso,      % iso（遵循 GB/T 3101）| tex
+]{Acad}
+
+\input{preamble}
+\input{setup}       % 题名、作者、单位、日期
+% preamble loaded before setup    % 你自己的宏包与命令
+
+\begin{document}
+
+%%% ---- 封面 ----
+\begin{frame}[plain, noframenumbering]
+  \titlepage
+\end{frame}
+
+%%% ---- 目录 ----
+%%% lang=en 时把这两处帧标题改成 Outline / References
+\begin{frame}{目录}
+  \tableofcontents
+\end{frame}
+
+%%% ---- 正文 ----
+\input{frames/01-motivation}
+\input{frames/02-method}
+\input{frames/03-results}
+\input{frames/04-conclusion}
+
+%%% ---- 参考文献 ----
+\begin{frame}[allowframebreaks]{参考文献}
+  \printbibliography[heading = none]
+\end{frame}
+
+%%% ---- 备用页 ----
+%%% \appendix 之后的帧不计入页脚的总页数（appendixnumberbeamer 的作用），
+%%% 所以听众看到的 "12/18" 里的 18 是正文页数，不会把备用页算进去。
+\appendix
+\input{frames/99-backup}
+
+\end{document}

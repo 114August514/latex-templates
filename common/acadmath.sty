@@ -1,0 +1,154 @@
+%%% ---------------------------------------------------------------------------
+%%% acadmath.sty —— article 与 beamer 共享的数学记号约定
+%%%
+%%% 放在 common/ 下由两个模板共用，目的是让**论文与报告的符号完全一致**。
+%%% 依赖 TEXINPUTS 指向 ../common（latexmkrc 与 Makefile 已配好）。
+%%%
+%%% 这里只放「记号」，不放定理环境——beamer 有自己的一套定理机制，
+%%% 放这里会冲突。定理环境见 article/acadarticle.cls 的「定理环境」一节。
+%%%
+%%% 正斜体规则依据 GB/T 3101—1993 与 ISO 80000-2:2019，详见 ../STANDARDS.md
+%%%
+%%% 载入顺序要求：若要用 unicode-math，必须在本宏包**之前**载入并设好数学字体。
+%%% acadarticle.cls / beamerthemeAcad.sty 已经处理好，一般不用操心。
+%%% ---------------------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}[2021/06/01]
+\ProvidesPackage{acadmath}[2026/07/26 v1.0 Shared academic math notation]
+
+\RequirePackage{amsmath}
+\RequirePackage{mathtools}   % amsmath 的增强，提供 \DeclarePairedDelimiter 等
+
+% unicode-math 自带全部 AMS 符号，此时再载 amssymb 会产生大量重定义警告
+\@ifpackageloaded{unicode-math}{}{\RequirePackage{amssymb}}
+
+\RequirePackage{siunitx}     % 量与单位，GB 3100 / ISO 80000-1
+
+%%% ===========================================================================
+%%% 1. siunitx：数值与单位
+%%%    一律写 \qty{5}{\kg}，不要手打 "5 kg"，间距与正体由宏包保证。
+%%%    只写单位用 \unit{\m\per\s}，只写数字用 \num{1.2e-3}。
+%%% ===========================================================================
+\sisetup{
+  % —— 跟随周围字体（siunitx v3 写法，等价于 v2 的 detect-all）——
+  mode                  = match,
+  propagate-math-font   = true,
+  % —— 数字分节：GB/T 15835 规定用窄空格而非逗号 ——
+  group-digits          = integer,
+  group-separator       = {\,},
+  group-minimum-digits  = 5,
+  % —— 数值范围：GB 用浪纹线，单位只出现一次 ——
+  range-phrase          = {\,\ensuremath{\sim}\,},
+  range-units           = single,
+  % —— 科学计数法的乘号 ——
+  exponent-product      = \times,
+  % —— 不确定度写作 1.234(5) 形式 ——
+  separate-uncertainty  = true,
+}
+
+% 常用非 SI 单位补充
+% 注意：本文件被 beamer 共用，不要用 \frame 之类会与 beamer 命令重名的单位名
+\DeclareSIUnit{\pixel}{px}
+\DeclareSIUnit{\flop}{FLOP}
+\DeclareSIUnit{\epoch}{epoch}
+\DeclareSIUnit{\fps}{FPS}
+
+%%% ===========================================================================
+%%% 2. 矢量 / 矩阵 / 张量
+%%%    GB/T 3101：矢量与张量用粗斜体；矩阵粗正体或粗斜体，全文统一即可。
+%%%    这里统一取粗斜体，与国际期刊主流一致。要改成粗正体，
+%%%    把下面 \mat 的定义换成 \acad@boldup 即可，正文一行不用动。
+%%% ===========================================================================
+\@ifpackageloaded{unicode-math}{%
+  \newcommand{\acad@boldmath}[1]{\symbfit{#1}}%
+  \newcommand{\acad@boldup}[1]{\symbfup{#1}}%
+  \newcommand{\acad@bb}[1]{\symbb{#1}}%
+}{%
+  \RequirePackage{bm}%
+  \newcommand{\acad@boldmath}[1]{\bm{#1}}%
+  \newcommand{\acad@boldup}[1]{\mathbf{#1}}%
+  \newcommand{\acad@bb}[1]{\mathbb{#1}}%
+}
+
+\newcommand{\vect}[1]{\acad@boldmath{#1}}          % 矢量    \vect{F}
+\newcommand{\mat}[1]{\acad@boldmath{#1}}           % 矩阵    \mat{A}
+\newcommand{\tens}[1]{\acad@boldmath{#1}}          % 张量    \tens{\sigma}
+\newcommand{\unitvec}[1]{\hat{\acad@boldmath{#1}}} % 单位矢量 \unitvec{n}
+
+% 上标须用正体（ISO 80000-2）
+\newcommand{\transpose}{^{\mathsf{T}}}
+\newcommand{\hermitian}{^{\mathsf{H}}}
+\newcommand{\inverse}{^{-1}}
+\newcommand{\pinv}{^{\dagger}}
+
+%%% ===========================================================================
+%%% 3. 数集：黑板粗、正体（ISO 80000-2）
+%%%    \C 在若干文档类中已被占用，故复数域用 \Cplx。
+%%% ===========================================================================
+\providecommand{\R}{}\renewcommand{\R}{\acad@bb{R}}
+\providecommand{\Z}{}\renewcommand{\Z}{\acad@bb{Z}}
+\providecommand{\N}{}\renewcommand{\N}{\acad@bb{N}}
+\providecommand{\Q}{}\renewcommand{\Q}{\acad@bb{Q}}
+\providecommand{\Cplx}{}\renewcommand{\Cplx}{\acad@bb{C}}
+\providecommand{\Field}{}\renewcommand{\Field}{\acad@bb{F}}
+\providecommand{\Expect}{}\renewcommand{\Expect}{\acad@bb{E}}  % 期望
+\providecommand{\Prob}{}\renewcommand{\Prob}{\acad@bb{P}}      % 概率测度
+
+%%% ===========================================================================
+%%% 4. 常数与算子：一律正体（GB/T 3101 §4）
+%%%    写 \e^x 而不是 e^x，写 \dd x 而不是 dx。
+%%% ===========================================================================
+\newcommand{\e}{\mathrm{e}}                  % 自然常数
+\newcommand{\ii}{\mathrm{i}}                 % 虚数单位
+\newcommand{\jj}{\mathrm{j}}                 % 电工科的虚数单位
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}      % 微分算子，自带正确前间距
+\newcommand{\pd}{\partial}
+
+% \deriv{y}{x} → dy/dx ；\deriv[2]{y}{x} → d²y/dx²
+\NewDocumentCommand{\deriv}{O{} m m}{\frac{\dd^{#1}#2}{\dd #3^{#1}}}
+\NewDocumentCommand{\pderiv}{O{} m m}{\frac{\pd^{#1}#2}{\pd #3^{#1}}}
+
+% 说明性下标必须正体：写 E\subtext{max}，不要写 E_{max}
+\newcommand{\subtext}[1]{_{\mathrm{#1}}}
+\newcommand{\suptext}[1]{^{\mathrm{#1}}}
+
+%%% ===========================================================================
+%%% 5. 函数名与算子：正体（GB/T 3101 §4）
+%%%    LaTeX 内置 \sin \log 等，这里补常见的统计/机器学习算子。
+%%% ===========================================================================
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator{\tr}{tr}                % 迹
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sign}{sgn}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\KLdiv}{KL}
+\DeclareMathOperator{\softmax}{softmax}
+\DeclareMathOperator{\relu}{ReLU}
+\DeclareMathOperator{\subjectto}{s.t.}
+
+%%% ===========================================================================
+%%% 6. 成对定界符：带 * 号自动放大，如 \abs*{\frac{a}{b}}
+%%% ===========================================================================
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\setof}{\{}{\}}
+\DeclarePairedDelimiter{\floorof}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceilof}{\lceil}{\rceil}
+\DeclarePairedDelimiterX{\inner}[2]{\langle}{\rangle}{#1,#2}
+\DeclarePairedDelimiterX{\given}[2]{(}{)}{#1 \,\delimsize\vert\, #2}
+
+%%% ===========================================================================
+%%% 7. 公式与上下文的间距
+%%%    中文行距较大，默认的公式间距会显得拥挤，这里略放宽。
+%%% ===========================================================================
+\AtBeginDocument{%
+  \setlength{\abovedisplayskip}{8pt plus 2pt minus 2pt}%
+  \setlength{\belowdisplayskip}{8pt plus 2pt minus 2pt}%
+  \setlength{\abovedisplayshortskip}{4pt plus 2pt}%
+  \setlength{\belowdisplayshortskip}{5pt plus 2pt minus 2pt}%
+}
+
+\endinput

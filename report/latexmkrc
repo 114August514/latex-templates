@@ -1,0 +1,36 @@
+# ----------------------------------------------------------------------------
+# latexmk 配置（report）
+# 直接运行 `latexmk` 或 `make` 即可，编译次数、biber 调用都由 latexmk 决定。
+# ----------------------------------------------------------------------------
+
+# 引擎：XeLaTeX（中文与 OpenType 字体支持最成熟）
+$pdf_mode = 5;
+$xelatex  = 'xelatex -synctex=1 -halt-on-error -file-line-error -interaction=nonstopmode %O %S';
+# 若要用 minted / pgfplots externalize，把上面一行加上 -shell-escape
+# （注意：-shell-escape 允许 TeX 执行外部命令，只对自己信得过的源文件开启）
+
+# 参考文献用 biber
+$bibtex_use = 2;
+$biber      = 'biber %O %S';
+
+# 中间文件与 PDF 统一放 build/，保持源目录干净
+$out_dir = 'build';
+
+# 让 ../common/acadmath.sty 可被找到；末尾的冒号表示继续搜索系统默认路径
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
+my $template = dirname(abs_path($rc_files_read[-1]));
+$ENV{'TEXINPUTS'} = "$template:$template/../common:" . ($ENV{'TEXINPUTS'} // '');
+$ENV{'BIBINPUTS'} = "$template:$template/../common:" . ($ENV{'BIBINPUTS'} // '');
+
+# latexmk -c 时一并清掉的扩展名
+$clean_ext = 'bbl run.xml synctex.gz xdv nav snm vrb';
+
+# 预览器：系统默认 PDF 阅读器（make watch）
+if ($^O eq 'MSWin32') {
+  $pdf_previewer = 'start %S';
+} elsif ($^O eq 'darwin') {
+  $pdf_previewer = 'open %S';
+} else {
+  $pdf_previewer = 'xdg-open %S';
+}

@@ -1,0 +1,130 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 实验
+%%%
+%%% 这一节演示图、子图、三线表、表注的规范写法：
+%%%   · 表题在表**上方**，图题在图**下方**（跨规范一致要求）
+%%%   · 表格只用 \toprule \midrule \bottomrule，不画竖线
+%%%   · 数字列用 siunitx 的 S 列，按小数点对齐
+%%%   · 坐标轴与表头标注写「量 / 单位」，如 t / s（GB/T 3101 推荐斜杠形式）
+%%%   · 图必须是矢量格式（PDF/EPS），位图不低于 600 dpi
+%%%
+%%% 图片放在 figures/ 下，\includegraphics 时不用写目录名和扩展名。
+%%% 下面的 \placeholder 是占位框，换成 \includegraphics 即可。
+%%% ---------------------------------------------------------------------------
+\section{实验}
+\label{sec:exp}
+
+\subsection{数据集与实现细节}
+\label{sec:exp:setup}
+
+实验在 \dataset{} 上进行，该数据集包含 \num{11268} 幅遥感图像、\num{1793658}
+个标注实例，覆盖 18 个类别。按官方划分取 \qty{50}{\percent} 为训练集、
+\qty{17}{\percent} 为验证集、\qty{33}{\percent} 为测试集。
+
+原始大幅面图像切分为 $1024 \times 1024$ 的子图，重叠 \qty{200}{\pixel}。
+骨干网络为 ResNet-50，优化器为 SGD，动量 \num{0.9}，权重衰减
+\num{1e-4}，初始学习率 \num{0.01}，批大小 16，共训练 \qty{36}{\epoch}。
+所有实验在 4 张 NVIDIA A100 上完成。
+
+\subsection{总体结构}
+\label{sec:exp:arch}
+
+\ourmethod{} 的整体结构如\cref{fig:architecture} 所示。
+
+\begin{figure}[htbp]
+  \centering
+  \placeholder{0.85\linewidth}{4.5cm}{figures/architecture.pdf}
+  \caption{\ourmethod{} 的整体结构}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{与现有方法的比较}
+\label{sec:exp:comparison}
+
+\cref{tab:main} 给出了与代表性方法的比较。所提方法在总体 mAP 与小目标
+子集上均取得最佳结果，且推理速度未出现明显下降。
+
+\begin{table}[htbp]
+  \centering
+  \caption{在 \dataset{} 测试集上与现有方法的比较}
+  \label{tab:main}
+  \begin{threeparttable}
+    \begin{tabular}{
+      l
+      S[table-format=2.1]
+      S[table-format=2.1]
+      S[table-format=2.1]
+      S[table-format=2.0]
+      S[table-format=3.1]
+    }
+      \toprule
+      {方法} & {mAP / \%} & {AP\textsubscript{S} / \%} &
+      {AP\textsubscript{L} / \%} & {速度 / FPS} & {参数量 / M} \\
+      \midrule
+      Faster R-CNN\tnote{a} & 68.2 & 41.3 & 79.6 & 24 & 41.4 \\
+      RetinaNet             & 69.7 & 43.0 & 80.1 & 28 & 37.9 \\
+      FPN + ATSS            & 74.7 & 48.5 & 84.2 & 33 & 38.5 \\
+      \midrule
+      \textbf{\ourmethod{}（本文）} & \bfseries 78.4 & \bfseries 54.7 &
+      \bfseries 85.9 & 31 & 42.1 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}[flushleft]
+      \footnotesize
+      \item[a] 所有对比方法均使用 ResNet-50 骨干网络，在相同的数据划分与
+        训练配置下复现。
+      \item AP\textsubscript{S} 与 AP\textsubscript{L} 分别为面积小于
+        $32^2$ 与大于 $96^2$ 像素的目标子集上的平均精度。
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{消融实验}
+\label{sec:exp:ablation}
+
+为分离两个模块的贡献，在验证集上做了消融实验，结果见\cref{tab:ablation}。
+可以看出，注意力门控贡献了 \qty{2.3}{\percent} 的 mAP 提升，可变形对齐
+在此基础上再贡献 \qty{1.4}{\percent}，两者叠加没有出现相互抵消。
+
+\begin{table}[htbp]
+  \centering
+  \caption{各模块的消融实验结果}
+  \label{tab:ablation}
+  \begin{tabular}{cc S[table-format=2.1] S[table-format=2.1]}
+    \toprule
+    {注意力门控} & {可变形对齐} & {mAP / \%} & {AP\textsubscript{S} / \%} \\
+    \midrule
+             &          & 74.7 & 48.5 \\
+    $\checkmark$ &        & 77.0 & 52.6 \\
+             & $\checkmark$ & 76.1 & 50.8 \\
+    $\checkmark$ & $\checkmark$ & \bfseries 78.4 & \bfseries 54.7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{定性结果}
+\label{sec:exp:qualitative}
+
+\cref{fig:qualitative} 给出了两组典型场景的检测结果。在密集停放的车辆
+场景（\cref{fig:qual-a}）中，基线方法出现了明显的漏检，而所提方法保持了
+较完整的召回。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{subfigure}[b]{0.47\linewidth}
+    \centering
+    \placeholder{\linewidth}{3.6cm}{figures/qual-vehicle.pdf}
+    \caption{密集车辆场景}
+    \label{fig:qual-a}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.47\linewidth}
+    \centering
+    \placeholder{\linewidth}{3.6cm}{figures/qual-ship.pdf}
+    \caption{近岸船舶场景}
+    \label{fig:qual-b}
+  \end{subfigure}
+  \caption{典型场景的检测结果对比}
+  \label{fig:qualitative}
+\end{figure}

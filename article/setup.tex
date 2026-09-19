@@ -1,0 +1,54 @@
+%%% ---------------------------------------------------------------------------
+%%% setup.tex —— 论文元数据
+%%%
+%%% 只填内容，不写格式。所有排版规则在 acadarticle.cls 里。
+%%% 对应 GB/T 7713.2—2022 前置部分的著录项。
+%%% ---------------------------------------------------------------------------
+
+%%% ---- 中文题名与作者 ----
+%%% 题名一般不超过 20 字，不使用非公知的缩略语、字符、代号
+\title{基于多尺度特征融合的遥感图像目标检测方法}
+
+%%% 多作者用 \quad 分隔；上标数字对应下面的单位编号
+\author{张三\textsuperscript{1}\quad 李四\textsuperscript{1,2}\quad 王五\textsuperscript{2}}
+
+%%% 单位要写全称，到二级单位，附城市与邮编（GB/T 7713.2）
+\affiliation{%
+  1.~中国科学技术大学 信息科学技术学院，合肥 230027；\\
+  2.~中国科学技术大学 大数据学院，合肥 230026%
+}
+
+%%% ---- 关键词：3~8 个，分号分隔，与英文一一对应 ----
+\keywords{遥感图像；目标检测；多尺度特征；特征融合；卷积神经网络}
+
+%%% ---- 中图分类号与文献标志码 ----
+%%% 中图分类号查《中国图书馆分类法》；文献标志码 A=理论与应用研究论文
+\clcnumber{TP391.4}
+\doccode{A}
+
+%%% ---- 英文题名、作者、单位（对应中文，供英文摘要块使用）----
+\entitle{Multi-scale Feature Fusion for Object Detection in Remote Sensing Imagery}
+\enauthor{ZHANG San\textsuperscript{1}, \quad LI Si\textsuperscript{1,2}, \quad WANG Wu\textsuperscript{2}}
+\enaffiliation{%
+  1.~School of Information Science and Technology, University of Science and
+  Technology of China, Hefei 230027, China;\\
+  2.~School of Data Science, University of Science and Technology of China,
+  Hefei 230026, China%
+}
+\enkeywords{remote sensing imagery; object detection; multi-scale feature;
+  feature fusion; convolutional neural network}
+
+%%% ---- 基金项目与通信作者（自动排为首页无标记脚注；anonymous 模式下隐去）----
+\funding{国家自然科学基金资助项目（62376001）；国家重点研发计划（2023YFB0000000）}
+\corresponding{李四，教授，E-mail: lisi@ustc.edu.cn}
+
+%%% ---- 页眉的短标题 ----
+\runningtitle{基于多尺度特征融合的遥感图像目标检测方法}
+
+%%% ---- 日期：留空则不显示 ----
+\date{}
+
+%%% ---- 参考文献数据库 ----
+%%% refs.bib 是指向 ../common/refs.bib 的符号链接，与 beamer 模板共用同一份
+%%% 文献库，改一处两处都生效。
+\addbibresource{refs.bib}

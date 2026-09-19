@@ -1,0 +1,51 @@
+%%% ---------------------------------------------------------------------------
+%%% main.tex —— 主控文件
+%%%
+%%% 这个文件只负责「装配」，不放正文、不放格式。
+%%%   要改样式  → acadreport.cls（封面在第 5 节）
+%%%   要改元数据 → setup.tex
+%%%   要加宏包/自定义命令 → preamble.tex
+%%%   要写正文  → sections/*.tex
+%%%
+%%% 编译：make        （或 latexmk main.tex）
+%%% ---------------------------------------------------------------------------
+\documentclass[
+  type      = lab,       % lab（实验报告）| tech（技术报告）| course（课程报告）
+  lang      = zh,
+  fontset   = fandol,    % fandol（零配置）| noto（更好看，需 noto-fonts-cjk）| none
+  mathstyle = iso,       % iso（遵循 GB/T 3101）| tex
+  bibstyle  = gb7714,    % gb7714 | ieee | numeric | none
+  % linenumbers,         % 给助教批改留行号
+  % print,               % 打印版：超链接转黑色
+]{acadreport}
+
+\input{setup}       % 课程、实验名、姓名学号、指导教师……
+\input{preamble}    % 你自己的宏包与命令
+
+\begin{document}
+
+\makecover
+
+%%% 技术报告需要「目次」，实验报告一般不要。按需取舍。
+% \tableofcontents
+% \clearpage
+
+%%% 技术报告需要摘要，实验报告一般不要。
+% \input{sections/00-abstract}
+
+\input{sections/01-objective}     % 实验目的
+\input{sections/02-principle}     % 实验原理
+\input{sections/03-setup}         % 实验环境与配置
+\input{sections/04-procedure}     % 实验步骤
+\input{sections/05-data}          % 数据记录与处理
+\input{sections/06-analysis}      % 结果分析与误差讨论
+\input{sections/07-conclusion}    % 结论
+\input{sections/08-questions}     % 思考题
+
+%%% lang=en 时把标题改成 {References}
+\printbibliography[title = {参考文献}]
+
+\appendix
+\input{sections/appendix}         % 原始数据、关键代码
+
+\end{document}

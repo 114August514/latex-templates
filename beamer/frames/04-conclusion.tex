@@ -1,0 +1,43 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 结论
+%%%
+%%% 最后一页正文应当是「听众只记住三句话，希望是哪三句」。
+%%% 主动说出局限，比等着被问出来要好。
+%%% ---------------------------------------------------------------------------
+\section{结论}
+
+\begin{frame}{结论}
+  \begin{block}{三点结论}
+    \begin{enumerate}
+      \setlength{\itemsep}{0.6em}
+      \item 特征金字塔的\alert{均匀融合}是小目标漏检的一个结构性来源
+      \item 空间自适应的门控 + 可变形对齐可以同时解决权重与错位两个问题，
+            且是标准金字塔的严格推广
+      \item 在 \dataset{} 上 mAP 达 \qty{78.4}{\percent}，
+            小目标 AP 提升 \qty{6.2}{\percent}，速度保持 \qty{31}{\fps}
+    \end{enumerate}
+  \end{block}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \setlength{\itemsep}{0.5em}
+    \item \textbf{局限}：独立性假设在层间强相关时不成立；仅在光学影像上验证
+    \item \textbf{下一步}：引入显式尺度先验；在 SAR 等模态上验证迁移能力
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[plain, noframenumbering]
+  \vfill
+  \begin{center}
+    {\usebeamerfont{title}\usebeamercolor[fg]{title} 谢谢\par}
+    \vskip 1.2em
+    {\usebeamercolor[fg]{structure}\rule{0.18\paperwidth}{0.8pt}}\par
+    \vskip 1.2em
+    {\small 代码与预训练模型：\url{https://github.com/example/msff-net}\par}
+    \vskip 0.4em
+    {\small 联系方式：\href{mailto:zhangsan@mail.ustc.edu.cn}
+                          {zhangsan@mail.ustc.edu.cn}\par}
+  \end{center}
+  \vfill
+\end{frame}

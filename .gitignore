@@ -1,0 +1,33 @@
+# 构建产物
+build/
+*.pdf
+!figures/**/*.pdf
+
+# LaTeX 中间文件（正常情况下都在 build/ 里，这里是直接跑 xelatex 时的兜底）
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+*.nav
+*.snm
+*.vrb
+*.lof
+*.lot
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+
+# 编辑器
+.idea/
+*.swp
+*~

@@ -1,0 +1,84 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 附录
+%%%
+%%% 位置：参考文献之后。main.tex 里的 \appendix 已把编号切成「附录 A」，
+%%% 图表公式自动变成 图 A1 / 表 A1 / 式 (A1)。
+%%%
+%%% 放什么：原始数据、关键代码、过长的推导——凡是放正文会打断阅读、
+%%% 但助教或复现者可能要核对的内容。
+%%% ---------------------------------------------------------------------------
+
+\section{原始数据}
+\label{app:rawdata}
+
+完整的逐 epoch 记录共 \num{1500} 行，此处仅列出各次运行的关键节点，
+完整 CSV 见随报告提交的 \texttt{logs/} 目录。
+
+\begin{table}[htbp]
+  \centering
+  \caption{各次运行的关键节点记录}
+  \label{tab:app-raw}
+  \begin{tabular}{l c
+                  S[table-format=2.2]
+                  S[table-format=3.0]
+                  S[table-format=1.4]}
+    \toprule
+    {优化器} & {种子} & {最佳验证准确率 / \%} & {最佳 epoch} & {最终训练损失} \\
+    \midrule
+    SGD-M & 0 & 94.91 & 96 & 0.0132 \\
+    SGD-M & 1 & 94.70 & 92 & 0.0141 \\
+    SGD-M & 2 & 95.08 & 98 & 0.0128 \\
+    SGD-M & 3 & 94.82 & 94 & 0.0136 \\
+    SGD-M & 4 & 94.97 & 97 & 0.0130 \\
+    \midrule
+    Adam  & 0 & 93.24 & 88 & 0.0089 \\
+    Adam  & 1 & 93.50 & 91 & 0.0085 \\
+    Adam  & 2 & 93.17 & 86 & 0.0092 \\
+    Adam  & 3 & 93.39 & 90 & 0.0087 \\
+    Adam  & 4 & 93.18 & 87 & 0.0091 \\
+    \midrule
+    AdamW & 0 & 94.63 & 93 & 0.0104 \\
+    AdamW & 1 & 94.79 & 95 & 0.0101 \\
+    AdamW & 2 & 94.46 & 90 & 0.0109 \\
+    AdamW & 3 & 94.74 & 94 & 0.0102 \\
+    AdamW & 4 & 94.57 & 92 & 0.0106 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{关键代码}
+\label{app:code}
+
+随机性控制部分（对应\cref{sec:procedure} 第 1 步）：
+
+\begin{lstlisting}[language=Python, caption={随机种子的完整设置}, label={lst:seed}]
+import os, random, numpy as np, torch
+
+def set_seed(seed: int) -> None:
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+def worker_init_fn(worker_id: int) -> None:
+    # DataLoader 的每个 worker 也要单独设种子，否则数据顺序仍不可复现
+    np.random.seed(torch.initial_seed() % 2**32 + worker_id)
+\end{lstlisting}
+
+不确定度计算部分（对应\cref{eq:mean-std} 与\cref{eq:uncertainty}）：
+
+\begin{lstlisting}[language=Python, caption={A 类不确定度评定}, label={lst:uncertainty}]
+import numpy as np
+
+def report(values):
+    """返回 (均值, 平均值的标准不确定度)，均已按有效数字规则处理。"""
+    x = np.asarray(values, dtype=float)
+    mean = x.mean()
+    s = x.std(ddof=1)              # 注意 ddof=1，样本标准差
+    u = s / np.sqrt(len(x))
+    return mean, u
+\end{lstlisting}

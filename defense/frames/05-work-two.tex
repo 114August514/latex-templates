@@ -1,0 +1,57 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 工作二：可变形对齐
+%%%
+%%% 目标页数：3~5 页。第二块工作通常可以讲得比第一块快，因为
+%%% 方法论的铺垫已经在工作一里做过了。
+%%%
+%%% 注意：如果两块工作是递进关系，要明确说出「工作二是在工作一的基础上」；
+%%% 如果是并列关系，也要明确说出「二者独立、可分别使用」。
+%%% 委员会很在意这两块是不是**一个整体的工作**，而不是两篇拼凑的论文。
+%%% ---------------------------------------------------------------------------
+\section{工作二：可变形对齐}
+
+\begin{frame}{对齐感受野偏移，消除逐元素融合的特征错位}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \begin{equation*}
+        \mathcal{D}(\tilde{\featmap})(\vect{p})
+          = \sum_{k=1}^{9} w_k\,
+            \tilde{\featmap}\!\left(\vect{p}+\vect{p}_k
+                                    + \alert{\Delta\vect{p}_k}\right)
+      \end{equation*}
+      \vspace{0.6em}
+      \begin{itemize}
+        \setlength{\itemsep}{0.6em}
+        \item 偏移量由 $3\times3$ 卷积回归
+        \item 与工作一串联：先对齐，再加权
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.4cm}{figures/deform-align.pdf}
+    \end{column}
+  \end{columns}
+  \takeaway{两块工作是串联的一个整体，不是两个独立模块的拼接}
+\end{frame}
+
+\begin{frame}{两块工作叠加得 3.7 个百分点，没有相互抵消}
+  \begin{evidence}
+    \begin{table}
+      \centering
+      \begin{tabular}{cc S[table-format=2.1] S[table-format=2.1]}
+        \toprule
+        {门控} & {对齐} & {mAP / \%} & {AP\textsubscript{S} / \%} \\
+        \midrule
+                   &            & 74.7 & 48.5 \\
+        $\checkmark$ &            & 77.0 & 52.6 \\
+                   & $\checkmark$ & 76.1 & 50.8 \\
+        $\checkmark$ & $\checkmark$ & \bfseries 78.4 & \bfseries 54.7 \\
+        \bottomrule
+      \end{tabular}
+    \end{table}
+  \end{evidence}
+  \takeaway{+2.3 与 +1.4 叠加后得 +3.7，接近两者之和，说明处理的是不同误差源}
+
+  \note{这是全场最重要的一张表。如果时间紧张，前面都可以压，这页不能压。}
+\end{frame}

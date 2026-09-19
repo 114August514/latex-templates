@@ -1,0 +1,57 @@
+%%% ---------------------------------------------------------------------------
+%%% main.tex —— 学位论文答辩幻灯片，主控文件
+%%%
+%%% 与 beamer/ 的区别只在**骨架和节奏**，视觉主题是同一套（common/ 下）：
+%%%   会议 talk  说服陌生同行「这个想法有意思」，15~20 分钟，可以只讲一条线
+%%%   学位答辩   向委员会证明「这份工作够一个学位」，要覆盖全部工作量与创新点
+%%%
+%%% 时长与页数的对应关系见 references/presenting.md，先按那个定页数再写。
+%%%
+%%% 编译：make | make handout | make notes
+%%% ---------------------------------------------------------------------------
+\documentclass[
+  aspectratio = 169,
+  11pt,
+  UTF8,
+  fontset = fandol,    % 与下面 \usetheme 的 fontset 必须配套
+]{ctexbeamer}
+
+\usetheme[
+  lang      = zh,
+  fontset   = fandol,
+  mathstyle = iso,
+  mode      = defense,  % 页脚左侧显示「第几节·节标题」而不是作者名
+]{Acad}
+
+\input{preamble}
+\input{setup}
+% preamble loaded before setup
+
+\begin{document}
+
+\begin{frame}[plain, noframenumbering]
+  \titlepage
+\end{frame}
+
+%%% 目录页在答辩里比在会议报告里重要得多：委员会要先知道你打算讲什么、
+%%% 有几块工作。讲的时候在这一页停 15 秒，把整体逻辑说一遍。
+\begin{frame}{汇报提纲}
+  \tableofcontents
+\end{frame}
+
+\input{frames/01-background}      % 选题背景与意义
+\input{frames/02-related}         % 国内外研究现状与存在问题
+\input{frames/03-content}         % 研究内容与技术路线
+\input{frames/04-work-one}        % 工作一
+\input{frames/05-work-two}        % 工作二
+\input{frames/06-conclusion}      % 结论与创新点
+\input{frames/07-achievements}    % 成果与工作量
+\input{frames/08-thanks}          % 致谢
+
+%%% ---- 备用页 ----
+%%% \appendix 之后不计入页脚总页数，所以委员会看到的 "24/26" 是正文页数。
+%%% 备用页索引在 99-backup.tex 里，问答时从那页跳转。
+\appendix
+\input{frames/99-backup}
+
+\end{document}

@@ -1,0 +1,333 @@
+%%% ---------------------------------------------------------------------------
+%%% acadbase.sty —— 各文档类共用的版式层
+%%%
+%%% acadarticle.cls（论文）与 acadreport.cls（实验/技术报告）都载入本文件。
+%%% 改「三个文档类都该一致」的东西就改这里；改「某一类特有」的东西改各自的 .cls。
+%%%
+%%% 分工：
+%%%   本文件   载入全部宏包 + 设定通用默认值（字体、数学、图表、定理、文献、超链接）
+%%%   各 .cls  在载入本文件**之后**调用 \geometry{} \ctexset{} \pagestyle{} 做特化
+%%%
+%%% 载入前，文档类必须已经用 kvoptions（prefix=acad@）定义好：
+%%%   \acad@lang        zh | en
+%%%   \acad@fontset     fandol | noto | windows | mac | ubuntu | none
+%%%   \acad@mathstyle   iso | tex
+%%%   \acad@bibstyle    gb7714 | gb7714ay | ieee | numeric | authoryear | none
+%%%   \ifacad@anonymous \ifacad@linenumbers \ifacad@print
+%%% 并且已经执行过 \LoadClass。
+%%%
+%%% 排版依据见 ../STANDARDS.md，每节开头标了对应的标准条目。
+%%% ---------------------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}[2021/06/01]
+\ProvidesPackage{acadbase}[2026/07/26 v1.0 Shared academic layout layer]
+
+\RequirePackage{etoolbox}
+
+% 供各 .cls 使用的语言分支宏
+\newcommand{\acad@ifzh}[2]{\ifdefstring{\acad@lang}{zh}{#1}{#2}}
+
+%%% ===========================================================================
+%%% 1. 中文支持与字体
+%%%    依据：CY/T 154—2017（中英混排）
+%%%
+%%%    fontset=noto 时走 ctex 的 none 分支，由本文件手工指定 Noto CJK。
+%%%    各系统字体包见 README「字体」。
+%%% ===========================================================================
+\def\acad@ctexfontset{\acad@fontset}
+\ifdefstring{\acad@fontset}{noto}{\def\acad@ctexfontset{none}}{}
+\acad@ifzh{\def\acad@scheme{chinese}}{\def\acad@scheme{plain}}
+
+\edef\acad@ctexoptions{UTF8,scheme=\acad@scheme,fontset=\acad@ctexfontset,heading=true}
+\expandafter\RequirePackage\expandafter[\acad@ctexoptions]{ctex}
+
+% —— 西文：TeX Gyre，按文件名查找，不依赖 fontconfig，换机器不会失效 ——
+\setmainfont{texgyretermes}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic, Ligatures = TeX,
+]
+\setsansfont{texgyreheros}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic,
+  Ligatures = TeX, Scale = MatchLowercase,
+]
+\setmonofont{texgyrecursor}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic,
+  Ligatures = TeX, Scale = MatchLowercase,
+]
+
+% —— 中文：仅在 fontset=noto 时接管 ——
+\ifdefstring{\acad@fontset}{noto}{%
+  \setCJKmainfont{Noto Serif CJK SC}[
+    BoldFont   = {Noto Serif CJK SC Bold},
+    ItalicFont = {Noto Serif CJK SC},   % 中文无真斜体，禁止伪斜（CY/T 154）
+  ]%
+  \setCJKsansfont{Noto Sans CJK SC}[BoldFont = {Noto Sans CJK SC Bold}]%
+  \setCJKmonofont{Sarasa Mono SC}%
+  \newCJKfontfamily[zhsong]\songti{Noto Serif CJK SC}[BoldFont={Noto Serif CJK SC Bold}]%
+  \newCJKfontfamily[zhhei]\heiti{Noto Sans CJK SC}[BoldFont={Noto Sans CJK SC Bold}]%
+  % Noto 没有仿宋与楷体，退化为宋体。要真楷体可装 ttf-lxgw-wenkai，
+  % 把下面两行的字体名改成 LXGW WenKai。
+  \newCJKfontfamily[zhfs]\fangsong{Noto Serif CJK SC}%
+  \newCJKfontfamily[zhkai]\kaishu{Noto Serif CJK SC}%
+}{}
+
+% fontset=none 且用户未自行定义时的兜底，保证 \heiti 等不会报未定义
+\providecommand{\songti}{\rmfamily}
+\providecommand{\heiti}{\sffamily\bfseries}
+\providecommand{\fangsong}{\rmfamily}
+\providecommand{\kaishu}{\rmfamily}
+
+% 中英之间的伸缩间距交给 xeCJK，正文里**不要**手打空格（CY/T 154）
+\xeCJKsetup{CJKglue = \hskip 0pt plus 0.08\baselineskip}
+
+%%% ===========================================================================
+%%% 2. 版面（默认值，各 .cls 用 \geometry{} 覆盖）
+%%% ===========================================================================
+\RequirePackage[a4paper, margin = 2.5cm, headheight = 14pt,
+                headsep = 0.6cm, footskip = 1.0cm]{geometry}
+\RequirePackage{fancyhdr}
+
+%%% ===========================================================================
+%%% 3. 数学
+%%%    依据：GB/T 3101—1993、ISO 80000-2:2019
+%%%    mathstyle=iso 时大写拉丁/希腊字母作为量符号也用斜体，这是国标要求；
+%%%    若所投期刊沿用传统 TeX 习惯（大写正体），用 mathstyle=tex。
+%%% ===========================================================================
+\RequirePackage{amsmath}
+\RequirePackage{mathtools}
+\RequirePackage{unicode-math}
+\ifdefstring{\acad@mathstyle}{iso}
+  {\unimathsetup{math-style = ISO, bold-style = ISO}}
+  {\unimathsetup{math-style = TeX, bold-style = TeX}}
+\setmathfont{texgyretermes-math.otf}
+% 若要换 newtx 数学字体（需 texlive-fontsextra），把上面四行换成
+%   \RequirePackage[varg]{newtxmath}
+% 并删掉 unicode-math 的载入。
+
+\RequirePackage{acadmath}          % 共享记号（\vect \mat \norm \dd \subtext …）
+
+%%% ===========================================================================
+%%% 4. 图、表、浮动体
+%%%    依据：表题在上、图题在下；表格用三线表（见 ../STANDARDS.md §2.2）
+%%% ===========================================================================
+\RequirePackage{graphicx}
+\graphicspath{{figures/}{./}}
+\RequirePackage{booktabs}          % 三线表：\toprule \midrule \bottomrule
+\RequirePackage{array}
+\RequirePackage{multirow}
+\RequirePackage{makecell}
+\RequirePackage{longtable}
+\RequirePackage{threeparttable}    % 表注
+\RequirePackage{float}
+
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\captionsetup{
+  font            = small,
+  labelfont       = bf,
+  justification   = centering,
+  singlelinecheck = true,
+  skip            = 6pt,
+}
+% 中文「图 1␣说明」，西文「Figure 1. Caption」
+\acad@ifzh{\captionsetup{labelsep = quad}}{\captionsetup{labelsep = period}}
+\captionsetup[table]{position = above}
+\captionsetup[figure]{position = below}
+\captionsetup[sub]{font = small, labelformat = parens, labelsep = space}
+% 提醒：position 只影响间距计算，实际位置取决于你把 \caption 写在
+% \begin{tabular} 之前（表）还是 \includegraphics 之后（图）。
+
+% 浮动体放置：放宽一点，减少图表被挤到文末
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.80}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+
+% 表格内小一号字，行距略放宽
+\AtBeginEnvironment{table}{\small\renewcommand{\arraystretch}{1.15}}
+\AtBeginEnvironment{longtable}{\small\renewcommand{\arraystretch}{1.15}}
+
+%%% ===========================================================================
+%%% 5. 算法
+%%% ===========================================================================
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\acad@ifzh{%
+  \floatname{algorithm}{算法}%
+  \renewcommand{\algorithmicrequire}{\textbf{输入：}}%
+  \renewcommand{\algorithmicensure}{\textbf{输出：}}%
+}{}
+
+%%% ===========================================================================
+%%% 6. 定理环境
+%%%    同一计数器跨定理/引理/命题/推论/定义连续编号，是数学类期刊的通行做法。
+%%% ===========================================================================
+\RequirePackage{amsthm}
+
+\acad@ifzh{%
+  \def\acad@n@theorem{定理}     \def\acad@n@lemma{引理}
+  \def\acad@n@prop{命题}        \def\acad@n@coro{推论}
+  \def\acad@n@defn{定义}        \def\acad@n@remark{注}
+  \def\acad@n@example{例}       \def\acad@n@assum{假设}
+  \def\acad@n@proof{证明}
+}{%
+  \def\acad@n@theorem{Theorem}  \def\acad@n@lemma{Lemma}
+  \def\acad@n@prop{Proposition} \def\acad@n@coro{Corollary}
+  \def\acad@n@defn{Definition}  \def\acad@n@remark{Remark}
+  \def\acad@n@example{Example}  \def\acad@n@assum{Assumption}
+  \def\acad@n@proof{Proof}
+}
+
+\newtheoremstyle{acadplain}
+  {8pt}{8pt}
+  {\itshape}                      % 正文字体（中文下无真斜体，即宋体）
+  {\parindent}
+  {\acad@ifzh{\heiti}{\bfseries}} % 标题字体
+  {}
+  {0.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{\acad@ifzh{（#3）}{ (#3)}}\acad@ifzh{\quad}{.}}
+
+\newtheoremstyle{acaddefinition}
+  {8pt}{8pt}
+  {\normalfont}
+  {\parindent}
+  {\acad@ifzh{\heiti}{\bfseries}}
+  {}
+  {0.5em}
+  {\thmname{#1}\thmnumber{ #2}\thmnote{\acad@ifzh{（#3）}{ (#3)}}\acad@ifzh{\quad}{.}}
+
+\theoremstyle{acadplain}
+\newtheorem{theorem}{\acad@n@theorem}[section]
+\newtheorem{lemma}[theorem]{\acad@n@lemma}
+\newtheorem{proposition}[theorem]{\acad@n@prop}
+\newtheorem{corollary}[theorem]{\acad@n@coro}
+
+\theoremstyle{acaddefinition}
+\newtheorem{definition}[theorem]{\acad@n@defn}
+\newtheorem{assumption}[theorem]{\acad@n@assum}
+\newtheorem{example}[theorem]{\acad@n@example}
+\newtheorem{remark}[theorem]{\acad@n@remark}
+
+\renewcommand{\proofname}{\acad@n@proof}
+
+%%% ===========================================================================
+%%% 7. 参考文献
+%%%    依据：GB/T 7714—2015（见 ../STANDARDS.md §1.2）
+%%% ===========================================================================
+\newbool{acad@usebib}\booltrue{acad@usebib}
+\ifdefstring{\acad@bibstyle}{none}{\boolfalse{acad@usebib}}{}
+
+\ifbool{acad@usebib}{%
+  \ifdefstring{\acad@bibstyle}{gb7714}{%
+    \PassOptionsToPackage{style=gb7714-2015,maxbibnames=3,minbibnames=3}{biblatex}}{}%
+  \ifdefstring{\acad@bibstyle}{gb7714ay}{%
+    \PassOptionsToPackage{style=gb7714-2015ay,maxbibnames=3,minbibnames=3}{biblatex}}{}%
+  \ifdefstring{\acad@bibstyle}{ieee}{%
+    \PassOptionsToPackage{style=ieee,maxbibnames=6,minbibnames=6}{biblatex}}{}%
+  \ifdefstring{\acad@bibstyle}{numeric}{%
+    \PassOptionsToPackage{style=numeric-comp,sorting=none,maxbibnames=6}{biblatex}}{}%
+  \ifdefstring{\acad@bibstyle}{authoryear}{%
+    \PassOptionsToPackage{style=authoryear-comp,maxbibnames=6}{biblatex}}{}%
+  \RequirePackage[backend=biber, giveninits=true, doi=false, isbn=false,
+                  eprint=false]{biblatex}
+  \renewcommand*{\bibfont}{\small}
+  \setlength{\bibitemsep}{2pt plus 1pt minus 1pt}
+}{}
+
+%%% ===========================================================================
+%%% 8. 超链接与交叉引用
+%%%    hyperref 必须在 cleveref **之前**载入。
+%%%    本节放在最后，是因为 hyperref 需要在绝大多数宏包之后加载。
+%%% ===========================================================================
+\RequirePackage{xcolor}
+\definecolor{acadlink}{RGB}{0,60,120}
+\definecolor{acadcite}{RGB}{0,90,60}
+\definecolor{acadurl} {RGB}{120,40,20}
+\definecolor{acadhead}{RGB}{0,0,128}   % 标题色
+\ifacad@print
+  \definecolor{acadlink}{RGB}{0,0,0}
+  \definecolor{acadcite}{RGB}{0,0,0}
+  \definecolor{acadurl} {RGB}{0,0,0}
+  \definecolor{acadhead}{RGB}{0,0,0}
+\fi
+
+\RequirePackage{hyperref}
+\hypersetup{
+  colorlinks        = true,
+  linkcolor         = acadlink,
+  citecolor         = acadcite,
+  urlcolor          = acadurl,
+  bookmarksnumbered = true,
+  bookmarksopen     = true,
+  bookmarksopenlevel= 2,
+  unicode           = true,
+  breaklinks        = true,
+  pdfstartview      = FitH,
+}
+\RequirePackage{bookmark}
+
+\RequirePackage[capitalise, noabbrev]{cleveref}
+% cleveref 的中文名和 conjunction 在 \AtBeginDocument 才真正定义，
+% 这里必须同样延后，否则 \renewcommand 会碰到未定义命令，
+% 且会被英文默认值盖掉。
+\acad@ifzh{%
+  \AtBeginDocument{%
+    \crefname{figure}{图}{图}         \Crefname{figure}{图}{图}%
+    \crefname{table}{表}{表}          \Crefname{table}{表}{表}%
+    \crefname{equation}{式}{式}       \Crefname{equation}{式}{式}%
+    \crefname{section}{节}{节}        \Crefname{section}{节}{节}%
+    \crefname{subsection}{节}{节}     \Crefname{subsection}{节}{节}%
+    \crefname{algorithm}{算法}{算法}   \Crefname{algorithm}{算法}{算法}%
+    \crefname{theorem}{定理}{定理}     \Crefname{theorem}{定理}{定理}%
+    \crefname{lemma}{引理}{引理}       \Crefname{lemma}{引理}{引理}%
+    \crefname{definition}{定义}{定义}  \Crefname{definition}{定义}{定义}%
+    \crefname{corollary}{推论}{推论}   \Crefname{corollary}{推论}{推论}%
+    \crefname{appendix}{附录}{附录}    \Crefname{appendix}{附录}{附录}%
+    \creflabelformat{equation}{(#2#1#3)}%
+    \renewcommand{\crefpairconjunction}{和}%
+    \renewcommand{\crefmiddleconjunction}{、}%
+    \renewcommand{\creflastconjunction}{和}%
+    \renewcommand{\crefrangeconjunction}{—}%
+    \renewcommand{\crefpairgroupconjunction}{和}%
+    \renewcommand{\crefmiddlegroupconjunction}{、}%
+    \renewcommand{\creflastgroupconjunction}{和}%
+  }%
+}{%
+  \AtBeginDocument{%
+    \crefname{algorithm}{Algorithm}{Algorithms}%
+    \Crefname{algorithm}{Algorithm}{Algorithms}%
+  }%
+}
+
+%%% ===========================================================================
+%%% 9. 送审行号
+%%%    lineno 与 amsmath 的多行公式有已知冲突，mathlines 可缓解；
+%%%    若仍报错，把出问题的公式用 \begin{linenomath}…\end{linenomath} 包起来。
+%%% ===========================================================================
+\ifacad@linenumbers
+  \RequirePackage[mathlines, modulo]{lineno}
+  \AtBeginDocument{\linenumbers}
+\fi
+
+%%% ===========================================================================
+%%% 10. 杂项
+%%% ===========================================================================
+\RequirePackage{enumitem}
+\setlist{nosep, itemsep = 2pt, topsep = 3pt, parsep = 0pt}
+\RequirePackage{url}
+\RequirePackage{microtype}         % 字距微调，显著改善两端对齐质量
+\RequirePackage{comment}           % 供 anonymous 模式丢弃整段用
+
+% 无标记脚注，用于首页的基金项目、通信作者、成绩栏等
+\newcommand{\acad@blfootnote}[1]{%
+  \begingroup
+    \renewcommand{\thefootnote}{}\footnotetext{#1}%
+    \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\endinput

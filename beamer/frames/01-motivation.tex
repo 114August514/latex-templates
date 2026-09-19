@@ -1,0 +1,62 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 研究背景与动机
+%%%
+%%% 写作提示（学术报告的通行约定，见 ../../STANDARDS.md §3）：
+%%%   · 帧标题写成**结论句**，不要写成名词短语。
+%%%     ✗「实验结果」   ✓「小目标的漏检来自特征衰减，而非分类能力不足」
+%%%   · 一帧一个论点。塞不下就拆帧，不要缩字号。
+%%%   · 用 \pause 做逐步揭示即可，不要用转场特效。
+%%% ---------------------------------------------------------------------------
+\section{研究背景}
+
+\begin{frame}{遥感图像的目标尺度跨越三个数量级}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \begin{itemize}
+        \setlength{\itemsep}{0.7em}
+        \item 同一景内，大型建筑可占 \num{5000} 像素以上
+        \item 车辆、船舶往往只有十余像素
+        \item 小目标实例数占 \qty{62}{\percent}，却贡献了
+              \qty{78}{\percent} 的漏检
+      \end{itemize}
+      \vspace{1em}
+      \begin{alertblock}{核心矛盾}
+        深层网络的语义能力与浅层网络的分辨率不可兼得。
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.2cm}{scale-distribution.pdf}
+      \\[0.4em]
+      {\footnotesize\color{AcadMuted} \dataset{} 的目标尺度分布}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{现有特征金字塔的两处结构性缺陷}
+  特征金字塔网络\cite{lin2017fpn}把深层语义回传到浅层，是当前检测器的
+  标准组件。但它的横向连接有两个假设并不成立：
+
+  \vspace{0.8em}
+  \begin{enumerate}
+    \setlength{\itemsep}{0.9em}
+    \item<1-> \textbf{融合权重在空间上均匀}\\
+      {\small 背景区域与小目标区域被同等对待，浅层的高分辨率信息在
+       前者上被浪费、在后者上又不够。}
+    \item<2-> \textbf{相邻层级的感受野是对齐的}\\
+      {\small 下采样引入亚像素偏移，逐元素相加会造成特征错位，
+       这一误差在小目标上被成倍放大。}
+  \end{enumerate}
+
+  \vspace{0.8em}
+  \onslide<3->{%
+    \begin{block}{本工作}
+      让融合权重\alert{随空间位置自适应}，并在融合前\alert{显式对齐}
+      相邻层级的感受野。
+    \end{block}%
+  }
+
+  \note{这一页是全场的立论点，讲慢一点。第二条如果听众没反应，
+        用「两张图错开一个像素再相加」来打比方。}
+\end{frame}

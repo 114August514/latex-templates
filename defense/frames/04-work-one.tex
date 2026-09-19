@@ -1,0 +1,76 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 工作一：跨层注意力门控
+%%%
+%%% 目标页数：4~6 页（20 分钟答辩里，两块工作合计应占一半以上时间）。
+%%% 每块工作的内部结构固定为：想法 → 方法 → 结果 → 这块工作证明了什么。
+%%%
+%%% 公式只放论点必需的那一两个，推导进备用页。委员会真想看推导会问，
+%%% 那时候翻备用页比事先塞在正文里更显得有准备。
+%%% ---------------------------------------------------------------------------
+\section{工作一：跨层注意力门控}
+
+\begin{frame}{让每个空间位置自己决定信任哪一层特征}
+  \begin{block}{门控权重}
+    \vspace{-0.6em}
+    \begin{equation*}
+      \mat{G}_l = \sigma\!\left(
+        \mat{W}_2 \relu\!\left(
+          \mat{W}_1 \left[ \operatorname{GAP}(\featmap_l) \,\Vert\,
+                           \operatorname{GAP}(\tilde{\featmap}_{l+1}) \right]
+        \right)\right)
+    \end{equation*}
+  \end{block}
+  \vspace{0.4em}
+  \begin{block}{融合}
+    \vspace{-0.6em}
+    \begin{equation*}
+      \featmap_l' = \alert{\mat{G}_l} \odot \featmap_l
+                  + (\mathbf{1} - \alert{\mat{G}_l}) \odot
+                    \mathcal{D}(\tilde{\featmap}_{l+1})
+    \end{equation*}
+  \end{block}
+  \takeaway{$\mat{G}_l \to \mathbf{0}$ 时退化为标准 FPN，所以这是它的严格推广}
+\end{frame}
+
+\begin{frame}{方差不增保证了训练稳定性}
+  \begin{theorem}[方差不增]
+    设两路特征互不相关、方差分别为 $\sigma_1^2,\sigma_2^2$，则对任意
+    $\mat{G}_l \in [0,1]^{H_l\times W_l}$，
+    \begin{equation*}
+      \Var\!\left[\featmap_l'\right] \le \max\setof{\sigma_1^2,\sigma_2^2}.
+    \end{equation*}
+  \end{theorem}
+  \vspace{0.6em}
+  \begin{itemize}
+    \item 逐点展开是 $g$ 的二次函数，最大值只能在端点取得
+    \item 完整证明与紧性讨论见备用页
+  \end{itemize}
+  \takeaway{不放大方差，因此不需要额外的训练技巧来稳住}
+
+  \note{委员会最可能在这里问「独立性假设成立吗」。
+        答案：不严格成立，但实验未观察到发散；备用页有相关性的实测。}
+\end{frame}
+
+\begin{frame}{门控单独带来 2.3 个百分点，增益集中在小目标}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \begin{table}
+        \centering\small
+        \begin{tabular}{l S[table-format=2.1] S[table-format=2.1]}
+          \toprule
+          {方法} & {mAP / \%} & {AP\textsubscript{S} / \%} \\
+          \midrule
+          FPN 基线     & 74.7 & 48.5 \\
+          + 门控       & \bfseries 77.0 & \bfseries 52.6 \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \placeholder{\linewidth}{3.6cm}{figures/gate-heatmap.pdf}
+    \end{column}
+  \end{columns}
+  \takeaway{小目标增益（+4.1）远高于总体（+2.3），与设计意图一致}
+\end{frame}

@@ -1,0 +1,87 @@
+%%% ---------------------------------------------------------------------------
+%%% beamerinnerthemeAcad.sty —— 帧内部元素
+%%%
+%%% 管：标题页、节页、目录、列表符号、block、图表标题、参考文献条目。
+%%% 帧的外框（帧标题栏、页脚）在 beamerouterthemeAcad.sty 里。
+%%% ---------------------------------------------------------------------------
+\ProvidesPackage{beamerinnerthemeAcad}[2026/07/26 v1.0 Acad inner theme]
+\mode<presentation>
+
+%%% ===========================================================================
+%%% 标题页
+%%% ===========================================================================
+\setbeamertemplate{title page}{%
+  \vfill
+  \begin{center}
+    \ifx\inserttitlegraphic\@empty\else
+      {\inserttitlegraphic\par}\vskip 1.2em
+    \fi
+    {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}%
+    \ifx\insertsubtitle\@empty\else
+      \vskip 0.6em
+      {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+    \fi
+    \vskip 1.3em
+    {\usebeamercolor[fg]{structure}\rule{0.26\paperwidth}{0.8pt}}\par
+    \vskip 1.3em
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}%
+    \vskip 0.5em
+    {\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}%
+    \vskip 1.0em
+    {\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}%
+  \end{center}
+  \vfill
+}
+
+%%% ===========================================================================
+%%% 节页（\AtBeginSection 里调用 \sectionpage）
+%%% 有意做成语言中立：只出现节号与节标题，不出现「第 N 部分 / Part N」，
+%%% 这样中英文报告共用同一份主题。
+%%% ===========================================================================
+\setbeamertemplate{section page}{%
+  \vfill
+  \begin{center}
+    {\usebeamercolor[fg]{structure}\usebeamerfont{footline}
+      \insertsectionnumber\par}%
+    \vskip 0.4em
+    {\usebeamerfont{section page}\usebeamercolor[fg]{section page}
+      \insertsectionhead\par}%
+    \vskip 0.9em
+    {\usebeamercolor[fg]{structure}\rule{0.14\paperwidth}{0.8pt}}%
+  \end{center}
+  \vfill
+}
+
+%%% ===========================================================================
+%%% 目录
+%%% ===========================================================================
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{subsection in toc}[subsections numbered]
+
+%%% ===========================================================================
+%%% 列表符号
+%%% 用 \rule 画，不依赖任何符号字体，投影下边缘也更干净。
+%%% ===========================================================================
+\setbeamertemplate{itemize item}      {\rule[0.35ex]{0.55ex}{0.55ex}}
+\setbeamertemplate{itemize subitem}   {\rule[0.35ex]{0.45ex}{0.45ex}}
+\setbeamertemplate{itemize subsubitem}{\rule[0.42ex]{0.60ex}{0.12ex}}
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{description item}[default]
+
+%%% ===========================================================================
+%%% Block：方角平铺，不用圆角与阴影——阴影在投影上会糊
+%%% ===========================================================================
+\setbeamertemplate{blocks}[default]
+
+%%% ===========================================================================
+%%% 图表标题：编号 + 冒号分隔
+%%% ===========================================================================
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+
+%%% ===========================================================================
+%%% 参考文献：用 [1] 这样的文本标记，不用默认的小图标
+%%% ===========================================================================
+\setbeamertemplate{bibliography item}[text]
+
+\mode<all>

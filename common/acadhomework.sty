@@ -1,0 +1,14 @@
+\NeedsTeXFormat{LaTeX2e}[2021/06/01]
+\ProvidesPackage{acadhomework}[2026/09/19 Homework structure and notation]
+\RequirePackage{needspace}
+\ctexset{section/name={问题,}}
+\newcommand{\problem}[2][]{%
+  \Needspace{5\baselineskip}%
+  \if\relax\detokenize{#1}\relax\section{#2}\else\section{#2（#1 分）}\fi}
+\newenvironment{solution}{\par\medskip\noindent\textbf{解答}\par\nobreak}{\par\medskip}
+\newcommand{\correctness}{\subsubsection*{正确性证明}}
+\newcommand{\complexity}{\subsubsection*{复杂度分析}}
+\newcommand{\bigO}[1]{O\!\left(#1\right)}
+\newcommand{\bigOmega}[1]{\Omega\!\left(#1\right)}
+\newcommand{\bigTheta}[1]{\Theta\!\left(#1\right)}
+\endinput

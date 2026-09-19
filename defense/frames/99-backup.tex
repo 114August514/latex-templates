@@ -1,0 +1,142 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 备用页
+%%%
+%%% 答辩的备用页和会议报告不一样：会议是「可能有人问」，答辩是
+%%% **一定会被问，而且问的人手里有你的论文全文**。所以备用页要按
+%%% 「预判的问题」来组织，不是按「没讲完的内容」。
+%%%
+%%% 怎么预判：把论文里每一个你自己觉得心虚的地方列出来——假设不严格、
+%%% 对比不充分、参数没调、样本量小、结论外推——每一条准备一页。
+%%% 通常 8~15 页。宁可多准备用不上，也不要被问住。
+%%%
+%%% 跳转机制（主题提供，靠 beamer 自带的 [label=] 建立目标）：
+%%%   备用页： \begin{frame}[label=bk:xxx]{标题} ... \returnbutton{main:end}
+%%%   索引页： \backuplink{bk:xxx}{条目名}
+%%% 问答时先跳到索引页（就是下面这一页），再点条目。
+%%% ---------------------------------------------------------------------------
+
+\begin{frame}[label=bk:index]{备用页索引}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \backuplink{bk:proof}{方差不增的完整证明}
+      \backuplink{bk:corr}{层间相关性的实测}
+      \backuplink{bk:hparam}{完整超参数配置}
+      \backuplink{bk:compare}{与相关工作的逐篇对比}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \backuplink{bk:failure}{失败案例分析}
+      \backuplink{bk:cost}{计算开销的分解}
+      \backuplink{bk:sar}{在 SAR 数据上的初步结果}
+      \backuplink{bk:repro}{复现性与随机性控制}
+    \end{column}
+  \end{columns}
+  \vfill
+  {\footnotesize\color{AcadMuted}
+   问答时从这一页跳转；每个备用页右下角可以跳回致谢页。}
+\end{frame}
+
+%%% —— 下面每一页对应一个预判的问题 ——
+
+\begin{frame}[label=bk:proof]{方差不增的完整证明与紧性}
+  由 $\Var[\featmap_l'] = g^2\sigma_1^2 + (1-g)^2\sigma_2^2$，右端是 $g$ 的
+  二次函数，在 $[0,1]$ 上最大值只能在端点取得，即得上界。进一步，
+
+  \begin{equation*}
+    \Var\!\left[\featmap_l'\right]
+      \ge \frac{\sigma_1^2\sigma_2^2}{\sigma_1^2+\sigma_2^2},
+    \qquad
+    g^{*} = \frac{\sigma_2^2}{\sigma_1^2+\sigma_2^2}.
+  \end{equation*}
+
+  \takeaway{中间取值处实际起方差收缩作用，这解释了训练曲线更平滑}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:corr]{层间相关性的实测——独立性假设有多离谱}
+  \begin{evidence}
+    \placeholder{0.66\linewidth}{3.8cm}{figures/layer-correlation.pdf}
+  \end{evidence}
+  \takeaway{实测相关系数 0.18~0.34，界会变松但不失效；未观察到训练发散}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:hparam]{完整超参数配置}
+  \begin{table}
+    \centering\small
+    \begin{tabular}{l l}
+      \toprule
+      {超参数} & {取值} \\
+      \midrule
+      优化器 / 学习率 & SGD（动量 0.9）/ \num{0.01}，余弦退火 \\
+      权重衰减 / 批大小 & \num{1e-4} / 16（4 卡 A100） \\
+      训练轮数 / 输入尺寸 & \qty{36}{\epoch} / $1024\times1024$ \\
+      门控压缩比 $r$ & 16 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:compare]{与相关工作的逐篇对比}
+  \placeholder{\linewidth}{4.4cm}{figures/related-comparison.pdf}
+  \takeaway{差别在于是否显式处理层级间的空间对齐}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:failure]{失败案例}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \placeholder{\linewidth}{3.4cm}{figures/failure.pdf}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \setlength{\itemsep}{0.6em}
+        \item 云层遮挡下门控权重失去区分度，退化为均匀融合
+        \item 极端长宽比目标仍存在定位偏差
+        \item 两类合计占测试集 \qty{4.1}{\percent}
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:cost]{计算开销的分解}
+  \begin{table}
+    \centering\small
+    \begin{tabular}{l S[table-format=2.1] S[table-format=2.1]}
+      \toprule
+      {模块} & {参数量 / M} & {FLOPs 占比 / \%} \\
+      \midrule
+      骨干 ResNet-50 & 23.5 & 71.2 \\
+      FPN            & 15.0 & 18.4 \\
+      门控 + 对齐    & 0.6  & 2.9  \\
+      检测头         & 3.0  & 7.5  \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \takeaway{新增模块只占 2.9\% 的 FLOPs，这解释了速度只掉 2 帧}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:sar]{在 SAR 数据上的初步结果}
+  在 SSDD 数据集上未经调优直接迁移，mAP 从基线 \qty{88.2}{\percent} 提升到
+  \qty{89.6}{\percent}，增益小于光学影像。原因推测是 SAR 的相干斑噪声
+  削弱了浅层特征的可靠性，门控倾向于更多依赖深层。
+
+  \takeaway{方法可迁移但增益衰减，这是后续工作的切入点}
+  \returnbutton{main:end}
+\end{frame}
+
+\begin{frame}[label=bk:repro]{复现性与随机性控制}
+  \begin{itemize}
+    \setlength{\itemsep}{0.6em}
+    \item 全部结果为 5 个随机种子的均值 $\pm$ 标准不确定度
+    \item 固定 \texttt{torch}、\texttt{numpy}、DataLoader worker 三处种子，
+          开启 \texttt{cudnn.deterministic}
+    \item 主结果 mAP $= \qty{78.4(7)}{\percent}$，与基线之差为
+          不确定度的约 4 倍
+  \end{itemize}
+  \takeaway{差异超出随机波动，不是种子挑出来的}
+  \returnbutton{main:end}
+\end{frame}

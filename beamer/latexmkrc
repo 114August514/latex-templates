@@ -1,0 +1,29 @@
+# ----------------------------------------------------------------------------
+# latexmk 配置（beamer）
+# ----------------------------------------------------------------------------
+
+$pdf_mode = 5;                       # XeLaTeX
+$xelatex  = 'xelatex -synctex=1 -halt-on-error -file-line-error -interaction=nonstopmode %O %S';
+
+$bibtex_use = 2;
+$biber      = 'biber %O %S';
+
+$out_dir = 'build';
+
+# 让 ../common/acadmath.sty 与 ../common/refs.bib 可被找到
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
+my $template = dirname(abs_path($rc_files_read[-1]));
+$ENV{'TEXINPUTS'} = "$template:$template/../common:" . ($ENV{'TEXINPUTS'} // '');
+$ENV{'BIBINPUTS'} = "$template:$template/../common:" . ($ENV{'BIBINPUTS'} // '');
+
+# beamer 特有的中间文件
+$clean_ext = 'bbl run.xml synctex.gz xdv nav snm vrb';
+
+if ($^O eq 'MSWin32') {
+  $pdf_previewer = 'start %S';
+} elsif ($^O eq 'darwin') {
+  $pdf_previewer = 'open %S';
+} else {
+  $pdf_previewer = 'xdg-open %S';
+}

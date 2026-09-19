@@ -1,0 +1,114 @@
+%%% ---------------------------------------------------------------------------
+%%% refs.bib —— 参考文献数据库（BibLaTeX 格式，用 biber 处理）
+%%%
+%%% GB/T 7714—2015 的要点（详见 ../STANDARDS.md §1.2）：
+%%%   · 中文文献必须写 langid = {chinese}，样式据此切换「等」/「et al.」
+%%%     以及文献类型标识码的处理
+%%%   · 著者超过 3 位时列前 3 位加「等」，这由 maxbibnames=3 自动完成
+%%%   · 电子资源必须有 urldate（引用日期）
+%%%   · 期刊文章尽量补 doi
+%%%
+%%% 常用条目类型 → GB/T 7714 文献类型标识码的对应：
+%%%   @article       → [J]      @book        → [M]
+%%%   @inproceedings → [C]      @thesis      → [D]
+%%%   @report        → [R]      @manual/@misc→ [S] / [EB/OL]
+%%%   @patent        → [P]      @online      → [EB/OL]
+%%% ---------------------------------------------------------------------------
+
+@article{cheng2016survey,
+  author   = {Cheng, Gong and Han, Junwei},
+  title    = {A Survey on Object Detection in Optical Remote Sensing Images},
+  journal  = {ISPRS Journal of Photogrammetry and Remote Sensing},
+  year     = {2016},
+  volume   = {117},
+  pages    = {11--28},
+  doi      = {10.1016/j.isprsjprs.2016.03.014},
+  langid   = {english},
+}
+
+@inproceedings{lin2017fpn,
+  author    = {Lin, Tsung-Yi and Doll{\'a}r, Piotr and Girshick, Ross and
+               He, Kaiming and Hariharan, Bharath and Belongie, Serge},
+  title     = {Feature Pyramid Networks for Object Detection},
+  booktitle = {Proceedings of the IEEE Conference on Computer Vision and
+               Pattern Recognition},
+  year      = {2017},
+  pages     = {2117--2125},
+  address   = {Honolulu, HI, USA},
+  publisher = {IEEE},
+  langid    = {english},
+}
+
+@inproceedings{zhang2020atss,
+  author    = {Zhang, Shifeng and Chi, Cheng and Yao, Yongqiang and
+               Lei, Zhen and Li, Stan Z.},
+  title     = {Bridging the Gap Between Anchor-Based and Anchor-Free Detection
+               via Adaptive Training Sample Selection},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and
+               Pattern Recognition},
+  year      = {2020},
+  pages     = {9759--9768},
+  langid    = {english},
+}
+
+@inproceedings{loshchilov2019adamw,
+  author    = {Loshchilov, Ilya and Hutter, Frank},
+  title     = {Decoupled Weight Decay Regularization},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2019},
+  langid    = {english},
+}
+
+%%% —— 中文期刊文章：注意 langid = {chinese} ——
+@article{wang2021remote,
+  author  = {王五 and 赵六 and 孙七 and 周八},
+  title   = {面向遥感图像的旋转目标检测方法综述},
+  journal = {自动化学报},
+  year    = {2021},
+  volume  = {47},
+  number  = {9},
+  pages   = {2089--2109},
+  langid  = {chinese},
+}
+
+%%% —— 中文专著 ——
+@book{li2019pattern,
+  author    = {李九},
+  title     = {模式识别与机器学习},
+  edition   = {2},
+  address   = {北京},
+  publisher = {清华大学出版社},
+  year      = {2019},
+  langid    = {chinese},
+}
+
+%%% —— 学位论文 [D] ——
+@thesis{chen2022thesis,
+  author      = {陈十},
+  title       = {高分辨率遥感图像小目标检测关键技术研究},
+  type        = {phdthesis},
+  institution = {中国科学技术大学},
+  address     = {合肥},
+  year        = {2022},
+  langid      = {chinese},
+}
+
+%%% —— 标准 [S] ——
+@manual{gbt7714,
+  author       = {{中国国家标准化管理委员会}},
+  title        = {信息与文献 参考文献著录规则: GB/T 7714—2015},
+  address      = {北京},
+  organization = {中国标准出版社},
+  year         = {2015},
+  langid       = {chinese},
+}
+
+%%% —— 电子资源 [EB/OL]：必须有 urldate ——
+@online{pytorch2024,
+  author  = {{PyTorch Team}},
+  title   = {PyTorch Documentation},
+  year    = {2024},
+  url     = {https://pytorch.org/docs/stable/index.html},
+  urldate = {2026-07-26},
+  langid  = {english},
+}

@@ -1,0 +1,9 @@
+[project]
+name = "latex-templates"
+version = "0.1.0"
+description = "Scaffolding scripts for the academic LaTeX templates"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false

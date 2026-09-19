@@ -1,0 +1,49 @@
+%%% ---------------------------------------------------------------------------
+%%% main.tex —— 主控文件
+%%%
+%%% 这个文件只负责「装配」，不放正文、不放格式。
+%%%   要改样式  → acadarticle.cls
+%%%   要改元数据 → setup.tex
+%%%   要加宏包/自定义命令 → preamble.tex
+%%%   要写正文  → sections/*.tex
+%%%
+%%% 编译：make        （或 latexmk main.tex）
+%%% ---------------------------------------------------------------------------
+\documentclass[
+  lang      = zh,        % zh | en
+  fontset   = fandol,    % fandol（零配置） | noto（更好看，需 noto-fonts-cjk） | none
+  mathstyle = iso,       % iso（遵循 GB/T 3101） | tex
+  bibstyle  = gb7714,    % gb7714 | gb7714ay | ieee | numeric | authoryear | none
+  % anonymous,           % 盲审：隐去作者/单位/基金/致谢
+  % linenumbers,         % 送审稿加行号
+  % print,               % 纸质版：超链接转黑色
+  % twocolumn,           % 双栏（原样传给 article）
+]{acadarticle}
+
+\input{setup}       % 题名、作者、单位、关键词、基金……
+\input{preamble}    % 你自己的宏包与命令
+
+\begin{document}
+
+%%% ---- 前置部分（GB/T 7713.2 规定顺序：题名→作者→单位→摘要→关键词）----
+\maketitle
+\input{sections/abstract}
+
+%%% ---- 主体部分 ----
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-method}
+\input{sections/04-experiments}
+\input{sections/05-conclusion}
+
+%%% ---- 结尾部分 ----
+%%% 注意顺序：致谢在参考文献**之前**，附录在参考文献**之后**（GB/T 7713）
+\input{sections/acknowledgements}
+
+%%% lang=en 时把标题改成 {References}
+\printbibliography[title = {参考文献}]
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

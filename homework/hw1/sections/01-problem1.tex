@@ -1,0 +1,26 @@
+% !TeX root = ../main.tex
+\problem[20]{求和算法}
+\label{sec:sum}
+计算数组的元素之和，说明正确性和复杂度。
+\begin{solution}
+\begin{algorithm}[htbp]
+  \caption{数组求和}\label{alg:sum}
+  \begin{algorithmic}[1]
+    \Require 数组 $A[1\ldots n]$
+    \Ensure 元素之和 $s$
+    \State $s\gets 0$
+    \For{$i=1,\ldots,n$}
+      \State $s\gets s+A[i]$
+    \EndFor
+    \State \Return $s$
+  \end{algorithmic}
+\end{algorithm}
+\correctness
+\begin{proof}
+完成第 $i$ 次迭代后，$s=\sum_{j=1}^{i} A[j]$。初始时成立，
+每次迭代保持此性质，结束时得到全部元素之和。
+\end{proof}
+\complexity
+\cref{alg:sum} 的时间复杂度为 $\bigTheta{n}$，额外空间为 $\bigO{1}$。
+算法分析的背景可参阅\cite{cormen2022}。
+\end{solution}

@@ -1,0 +1,90 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 方法
+%%%
+%%% 幻灯片上的公式要能被 3 秒内看懂：
+%%%   · 只放论点必需的那一两个式子，推导放备用页
+%%%   · 符号用 ../common/acadmath.sty 里的宏（\vect \mat \norm …），
+%%%     与论文完全一致，听众看完报告再看论文不需要重新建立对应关系
+%%%   · 关键项用 \alert{} 标出来，边讲边指
+%%% ---------------------------------------------------------------------------
+\section{方法}
+
+\begin{frame}{跨层注意力门控：让每个位置自己决定信任哪一层}
+  \begin{block}{门控权重}
+    \vspace{-0.6em}
+    \begin{equation*}
+      \mat{G}_l = \sigma\!\left(
+        \mat{W}_2 \relu\!\left(
+          \mat{W}_1 \left[ \operatorname{GAP}(\featmap_l) \,\Vert\,
+                           \operatorname{GAP}(\tilde{\featmap}_{l+1}) \right]
+        \right)
+      \right)
+    \end{equation*}
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{block}{融合}
+    \vspace{-0.6em}
+    \begin{equation*}
+      \featmap_l' = \alert{\mat{G}_l} \odot \featmap_l
+                  + (\mathbf{1} - \alert{\mat{G}_l}) \odot
+                    \mathcal{D}(\tilde{\featmap}_{l+1})
+    \end{equation*}
+  \end{block}
+
+  \vspace{0.6em}
+  \begin{itemize}
+    \item $\mat{G}_l \to \mathbf{0}$ 时退化为标准特征金字塔
+          \;$\Rightarrow$\; 本方法是它的\alert{严格推广}
+    \item 额外参数量仅 \num{0.6}\,M，不改变检测头
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{门控融合不会放大方差，因此训练是稳定的}
+  \begin{theorem}[方差不增]
+    设 $\featmap_l$ 与 $\mathcal{D}(\tilde{\featmap}_{l+1})$ 互不相关、
+    方差分别为 $\sigma_1^2$ 与 $\sigma_2^2$，则对任意
+    $\mat{G}_l \in [0,1]^{H_l \times W_l}$，
+    \begin{equation*}
+      \Var\!\left[\featmap_l'\right] \le \max\setof{\sigma_1^2, \sigma_2^2}.
+    \end{equation*}
+  \end{theorem}
+
+  \pause
+  \vspace{0.6em}
+  \begin{proof}[证明思路]
+    逐点展开得 $g^2\sigma_1^2 + (1-g)^2\sigma_2^2$，是 $g$ 的二次函数，
+    在 $[0,1]$ 上的最大值只能在端点取得。\qedhere
+  \end{proof}
+
+  \vspace{0.4em}
+  {\footnotesize\color{AcadMuted}
+   完整证明与紧性讨论见备用页与论文附录 A。}
+
+  \note{如果时间紧，这一页只念定理结论，证明思路跳过去，
+        有人问再翻备用页。}
+\end{frame}
+
+\begin{frame}{可变形对齐消除层级间的感受野偏移}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \begin{equation*}
+        \mathcal{D}(\tilde{\featmap})(\vect{p})
+          = \sum_{k=1}^{9} w_k\,
+            \tilde{\featmap}\!\left(\vect{p} + \vect{p}_k
+                                    + \alert{\Delta \vect{p}_k}\right)
+      \end{equation*}
+      \vspace{0.5em}
+      \begin{itemize}
+        \setlength{\itemsep}{0.6em}
+        \item 偏移量 $\Delta \vect{p}_k$ 由 $3\times3$ 卷积回归
+        \item 与门控串联，先对齐再加权
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.4cm}{figures/deform-align.pdf}
+    \end{column}
+  \end{columns}
+\end{frame}

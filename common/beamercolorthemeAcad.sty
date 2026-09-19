@@ -1,0 +1,78 @@
+%%% ---------------------------------------------------------------------------
+%%% beamercolorthemeAcad.sty —— 配色
+%%%
+%%% 改颜色只动这个文件。所有颜色都从下面 6 个基色派生，
+%%% 换一套配色通常只需要改 AcadPrimary 与 AcadSecondary 两行。
+%%%
+%%% 这套配色是量化验证过的（数值见下），改之前先想清楚要不要重新验：
+%%%
+%%%   · 对比度：所有前景色对白底、以及对 block 的浅底 AcadWash，
+%%%     WCAG 对比度均 ≥ 4.5（AA 正文标准）。注意 block 里的文字压的是
+%%%     AcadWash 而不是纯白，只按白底调色会在 block 里掉到 AA 以下。
+%%%   · 色觉缺陷：三个语义色（主色/强调/辅助）在绿色盲与红色盲模拟下
+%%%     两两 ΔE*ab ≥ 38，可靠区分。蓝色盲下主色与辅助色偏近（ΔE≈13），
+%%%     所以**不要只靠颜色编码信息**——图例、标记形状、文字标注都要跟上。
+%%%
+%%% 换配色后想重验，算法见 skills/academic-writing/references/presenting.md
+%%% ---------------------------------------------------------------------------
+\ProvidesPackage{beamercolorthemeAcad}[2026/07/26 v1.0 Acad color theme]
+\mode<presentation>
+
+%%% ---- 基色 ----
+\definecolor{AcadPrimary}  {RGB}{11,61,107}   % 主色：深蓝，用于标题与结构
+\definecolor{AcadSecondary}{RGB}{150,90,14}   % 强调色：赭金，用于 \alert
+\definecolor{AcadAccent}   {RGB}{0,102,86}   % 辅助色：墨绿，用于 example
+\definecolor{AcadInk}      {RGB}{28,32,38}   % 正文墨色（不用纯黑，减轻眩光）
+\definecolor{AcadMuted}    {RGB}{99,104,111}   % 次要文字：页脚、注释
+\definecolor{AcadWash}     {RGB}{243,245,248}   % 浅底：block 背景
+
+%%% ---- 全局 ----
+\setbeamercolor{normal text}  {fg = AcadInk,     bg = white}
+\setbeamercolor{structure}    {fg = AcadPrimary}
+\setbeamercolor{alerted text} {fg = AcadSecondary}
+\setbeamercolor{example text} {fg = AcadAccent}
+
+%%% ---- 标题页 ----
+\setbeamercolor{title}        {fg = AcadPrimary}
+\setbeamercolor{subtitle}     {fg = AcadMuted}
+\setbeamercolor{author}       {fg = AcadInk}
+\setbeamercolor{institute}    {fg = AcadMuted}
+\setbeamercolor{date}         {fg = AcadMuted}
+
+%%% ---- 帧标题 ----
+\setbeamercolor{frametitle}   {fg = AcadPrimary, bg = }
+\setbeamercolor{framesubtitle}{fg = AcadMuted,   bg = }
+
+%%% ---- 页脚 ----
+\setbeamercolor{footline}     {fg = AcadMuted,   bg = }
+
+%%% ---- 目录与节页 ----
+\setbeamercolor{section in toc}          {fg = AcadInk}
+\setbeamercolor{subsection in toc}       {fg = AcadMuted}
+\setbeamercolor{section number projected}{fg = white, bg = AcadPrimary}
+\setbeamercolor{section page}            {fg = AcadPrimary}
+
+%%% ---- 列表符号 ----
+\setbeamercolor{itemize item}      {fg = AcadPrimary}
+\setbeamercolor{itemize subitem}   {fg = AcadMuted}
+\setbeamercolor{itemize subsubitem}{fg = AcadMuted}
+\setbeamercolor{enumerate item}    {fg = AcadPrimary}
+\setbeamercolor{description item}  {fg = AcadPrimary}
+
+%%% ---- Block ----
+\setbeamercolor{block title}          {fg = white,       bg = AcadPrimary}
+\setbeamercolor{block body}           {fg = AcadInk,     bg = AcadWash}
+\setbeamercolor{block title alerted}  {fg = white,       bg = AcadSecondary}
+\setbeamercolor{block body alerted}   {fg = AcadInk,     bg = AcadWash}
+\setbeamercolor{block title example}  {fg = white,       bg = AcadAccent}
+\setbeamercolor{block body example}   {fg = AcadInk,     bg = AcadWash}
+
+%%% ---- 其他 ----
+\setbeamercolor{caption name}   {fg = AcadPrimary}
+\setbeamercolor{bibliography item}{fg = AcadInk}
+\setbeamercolor{bibliography entry author}{fg = AcadInk}
+\setbeamercolor{bibliography entry title} {fg = AcadInk}
+\setbeamercolor{bibliography entry note}  {fg = AcadMuted}
+\setbeamercolor{separation line}{fg = AcadPrimary}
+
+\mode<all>

@@ -1,0 +1,63 @@
+%%% ---------------------------------------------------------------------------
+%%% preamble.tex —— 你自己的宏包与自定义命令
+%%%
+%%% 主题里已经载入了：
+%%%   fontspec / unicode-math / acadmath / amsmath / mathtools
+%%%   graphicx / booktabs / array / translator / appendixnumberbeamer
+%%% 不要重复载入。特别注意：**不要载入 enumitem**，它会破坏 \item<2-> 覆盖语法。
+%%% ---------------------------------------------------------------------------
+
+%%% ---- 参考文献 ----
+%%% 样式与 article 模板保持一致；投英文会议时换成 style=ieee
+\usepackage[
+  backend     = biber,
+  style       = gb7714-2015,   % gb7714-2015 | gb7714-2015ay | ieee | numeric-comp
+  maxbibnames = 3,
+  minbibnames = 3,
+  giveninits  = true,
+  doi         = false,
+  isbn        = false,
+  url         = false,
+]{biblatex}
+
+%%% ---- 节页：每进入一个新 \section 自动插一页过渡 ----
+%%% 不想要就把整段注释掉。
+\AtBeginSection[]{%
+  \begin{frame}[plain, noframenumbering]
+    \sectionpage
+  \end{frame}%
+}
+
+%%% ---- 按需追加的宏包 ----
+% \usepackage{tikz}
+% \usepackage{pgfplots}\pgfplotsset{compat=1.18}
+% \usepackage{multicol}
+
+%%% ---- 本报告专用的记号（与论文保持一致）----
+\newcommand{\ourmethod}{MSFF-Net}
+\newcommand{\dataset}{DOTA-v2.0}
+\newcommand{\featmap}{\mat{F}}
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\params}{\vect{\theta}}
+
+%%% ---- 占位图 ----
+%%% 只为让模板在没有图片时也能编译；真正插图时改用
+%%% \includegraphics[width=0.8\linewidth]{architecture}
+\newcommand{\placeholder}[3]{%
+  \begingroup
+    \fboxsep=0pt \fboxrule=0.4pt
+    \fbox{\parbox[c][#2][c]{\dimexpr#1-2\fboxrule\relax}{\centering\footnotesize\ttfamily\color{AcadMuted}#3}}%
+  \endgroup
+}
+
+%%% ---- 演讲备注 ----
+%%% 在帧里写 \note{...} 记备注。
+%%%   make        普通编译，备注不出现
+%%%   make notes  生成双屏 PDF（左边幻灯片、右边备注），投影时用 pdfpc 播放
+%%% 开关由 make 传进来的 \AcadShowNotes 控制，这里不用手改。
+\ifdefined\AcadShowNotes
+  \usepackage{pgfpages}
+  \setbeameroption{show notes on second screen = right}
+\else
+  \setbeameroption{hide notes}
+\fi

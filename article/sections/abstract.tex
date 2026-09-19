@@ -1,0 +1,42 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 摘要与关键词
+%%%
+%%% GB/T 7713.2 对摘要的要求（写之前先看一遍）：
+%%%   · 报道性摘要，能脱离全文独立存在
+%%%   · 不出现「本文」「作者」等自指表述
+%%%   · 不引用文献编号、不出现图表号
+%%%   · 不使用非公知的缩略语
+%%%   · 中文摘要一般 300 字以内，英文摘要与中文对应
+%%%   结构建议：目的 → 方法 → 结果（带具体数据）→ 结论
+%%%
+%%% 关键词写在 setup.tex 里，这里的环境会自动排出来。
+%%% ---------------------------------------------------------------------------
+
+\begin{abstract}
+针对遥感图像中目标尺度跨度大、小目标特征在深层网络中易丢失的问题，提出一种
+多尺度特征融合的目标检测方法。该方法在特征金字塔的基础上引入跨层注意力
+门控，按空间位置自适应地加权来自不同下采样倍率的特征，并以可变形卷积
+对齐相邻层级的感受野偏移。在 \dataset{} 数据集上的实验表明，所提方法的
+平均精度均值达到 \qty{78.4}{\percent}，较基线方法提升 \qty{3.7}{\percent}，
+其中小目标类别的平均精度提升 \qty{6.2}{\percent}，推理速度保持在
+\qty{31}{\fps}。结果说明跨层注意力门控能够在不显著增加计算量的
+前提下缓解小目标特征衰减，为高分辨率遥感图像的实时检测提供了可行方案。
+\end{abstract}
+
+%%% 英文摘要块（lang=en 时删掉这一段即可）
+\begin{enabstract}
+To address the large scale variation of objects and the loss of small-object
+features in deep networks for remote sensing imagery, a multi-scale feature
+fusion detection method is proposed. Built upon a feature pyramid, the method
+introduces a cross-level attention gate that adaptively weights features from
+different downsampling rates at each spatial location, and employs deformable
+convolution to align the receptive-field offsets between adjacent levels.
+Experiments on \dataset{} show that the proposed method attains a mean average
+precision of \qty{78.4}{\percent}, an improvement of \qty{3.7}{\percent} over
+the baseline, with a \qty{6.2}{\percent} gain on small-object categories while
+maintaining an inference speed of \qty{31}{\fps}. The results
+indicate that the cross-level attention gate mitigates small-object feature
+attenuation without a significant increase in computation, offering a practical
+route to real-time detection in high-resolution remote sensing imagery.
+\end{enabstract}

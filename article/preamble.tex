@@ -1,0 +1,48 @@
+%%% ---------------------------------------------------------------------------
+%%% preamble.tex —— 你自己的宏包与自定义命令
+%%%
+%%% 类文件里已经载入了：
+%%%   ctex / fontspec / geometry / unicode-math / acadmath / amsmath / mathtools
+%%%   graphicx / booktabs / array / multirow / makecell / longtable / threeparttable
+%%%   caption / subcaption / float / algorithm / algpseudocode / amsthm
+%%%   biblatex / fancyhdr / xcolor / hyperref / bookmark / cleveref
+%%%   enumitem / url / microtype
+%%% 不要重复载入这些，尤其不要重新载入 hyperref。
+%%%
+%%% 共享的数学记号（\vect \mat \norm \argmin \dd \subtext …）见 ../common/acadmath.sty，
+%%% 那个文件同时被 beamer 模板使用，改它可以让论文和报告的符号保持一致。
+%%% ---------------------------------------------------------------------------
+
+%%% ---- 按需追加的宏包 ----
+% \usepackage{tikz}
+% \usepackage{pgfplots}\pgfplotsset{compat=1.18}
+% \usepackage{listings}          % 代码
+% \usepackage{physics}           % 注意：与 unicode-math 有已知冲突，慎用
+
+%%% ---- 本文专用的记号 ----
+% 例：把常用的模型名、数据集名定成命令，避免全文写法不一致
+\newcommand{\ourmethod}{MSFF-Net}
+\newcommand{\dataset}{DOTA-v2.0}
+
+% 例：本文专用的数学量
+\newcommand{\featmap}{\mat{F}}          % 特征图
+\newcommand{\loss}{\mathcal{L}}         % 损失函数
+\newcommand{\params}{\vect{\theta}}     % 参数向量
+
+%%% ---- 占位图 ----
+%%% 只是为了让模板在没有任何图片文件时也能编译。
+%%% 真正插图时删掉它，改用：\includegraphics[width=0.85\linewidth]{architecture}
+%%% 用法：\placeholder{<宽>}{<高>}{<说明文字>}
+\newcommand{\placeholder}[3]{%
+  \begingroup
+    \fboxsep=0pt \fboxrule=0.4pt
+    \fbox{\parbox[c][#2][c]{\dimexpr#1-2\fboxrule\relax}{\centering\footnotesize\ttfamily\color{gray}#3}}%
+  \endgroup
+}
+
+%%% ---- 若要覆盖类文件里的样式，写在这里（会后于类文件生效）----
+% 例：改正文字号
+% \AtBeginDocument{\zihao{-4}}
+%
+% 例：图题改成左对齐
+% \captionsetup[figure]{justification=raggedright, singlelinecheck=false}

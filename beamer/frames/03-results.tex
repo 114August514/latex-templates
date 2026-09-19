@@ -1,0 +1,84 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 实验结果
+%%%
+%%% 幻灯片上的表格要比论文里的**再删一半**：只留支撑当前论点的行与列，
+%%% 完整表格放备用页。数字用 \alert 或加粗指出该看哪一个。
+%%% ---------------------------------------------------------------------------
+\section{实验结果}
+
+\begin{frame}{mAP 提升 3.7 个百分点，小目标提升 6.2 个百分点}
+  \begin{table}
+    \centering
+    \begin{tabular}{l S[table-format=2.1] S[table-format=2.1] S[table-format=2.0]}
+      \toprule
+      {方法} & {mAP / \%} & {AP\textsubscript{S} / \%} & {速度 / FPS} \\
+      \midrule
+      RetinaNet    & 69.7 & 43.0 & 28 \\
+      FPN + ATSS   & 74.7 & 48.5 & 33 \\
+      \midrule
+      \textbf{\ourmethod{}} & \bfseries 78.4 & \bfseries 54.7 & 31 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \setlength{\itemsep}{0.5em}
+    \item 小目标子集的增益（\alert{+6.2}）显著高于总体（+3.7）
+          \;$\Rightarrow$\; 提升确实来自小目标
+    \item 速度从 \qty{33}{\fps} 降至 \qty{31}{\fps}，仍满足实时要求
+  \end{itemize}
+
+  \note{有人会问「为什么速度只掉 2 帧」——因为门控只在 3 个融合点上做，
+        GAP 之后是 1×1 卷积，计算量可以忽略。}
+\end{frame}
+
+\begin{frame}{两个模块各自有效，且不相互抵消}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \begin{table}
+        \centering\small
+        \begin{tabular}{cc S[table-format=2.1]}
+          \toprule
+          {门控} & {对齐} & {mAP / \%} \\
+          \midrule
+                     &            & 74.7 \\
+          $\checkmark$ &            & 77.0 \\
+                     & $\checkmark$ & 76.1 \\
+          $\checkmark$ & $\checkmark$ & \bfseries 78.4 \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{itemize}
+        \setlength{\itemsep}{0.7em}
+        \item 门控单独贡献 \alert{+2.3}
+        \item 对齐单独贡献 \alert{+1.4}
+        \item 叠加得 +3.7，接近两者之和
+      \end{itemize}
+      \vspace{0.6em}
+      {\footnotesize\color{AcadMuted}
+       说明两个模块处理的是不同的误差来源。}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{密集小目标场景的漏检明显减少}
+  \begin{columns}[c, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.0cm}{figures/qual-baseline.pdf}\\[0.4em]
+      {\footnotesize 基线：FPN + ATSS}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.0cm}{figures/qual-ours.pdf}\\[0.4em]
+      {\footnotesize \ourmethod{}（本文）}
+    \end{column}
+  \end{columns}
+  \vspace{0.8em}
+  \centering
+  {\small 密集停放的车辆场景，红框为漏检。}
+\end{frame}

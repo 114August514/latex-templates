@@ -1,0 +1,43 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 选题背景与意义
+%%%
+%%% 这一节回答委员会的第一个问题：**这件事值得做一个学位吗**。
+%%% 目标页数：2~3 页（20 分钟答辩）。讲太久是最常见的时间分配错误——
+%%% 背景讲了 8 分钟，自己的工作只剩 6 分钟，这是答辩失分的头号原因。
+%%%
+%%% 开题答辩：这一节要扩到 4~5 页，因为开题的重点就是论证选题。
+%%% 中期/毕业答辩：压到 2 页，委员会已经看过开题了。
+%%%
+%%% 帧标题写成断言句（见 references/presenting.md 的 Assertion-Evidence）。
+%%% ---------------------------------------------------------------------------
+\section{选题背景与意义}
+
+\begin{frame}{遥感目标检测的瓶颈在小目标，而非整体精度}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \setlength{\itemsep}{0.8em}
+        \item 对地观测、灾害评估、城市管理的共性技术环节
+        \item 现有方法总体 mAP 已达 \qty{75}{\percent} 以上
+        \item 但小目标（$<32^2$ 像素）子集只有 \qty{48}{\percent}，
+              且贡献了 \qty{78}{\percent} 的漏检
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \centering
+      \placeholder{\linewidth}{4.2cm}{figures/scale-gap.pdf}
+    \end{column}
+  \end{columns}
+  \takeaway{总体指标已经饱和，剩下的空间几乎全在小目标上}
+
+  \note{开场第一页。语速放慢，让委员会进入状态。
+        「总体饱和、空间在小目标」这句话要说清楚，它是全篇的立足点。}
+\end{frame}
+
+\begin{frame}{应用侧的需求是实时，这限制了可用的解法}
+  \begin{evidence}
+    \placeholder{0.72\linewidth}{4.4cm}{figures/application-constraints.pdf}
+  \end{evidence}
+  \takeaway{离线的高精度方案解决不了问题，必须在实时预算内提升小目标}
+\end{frame}

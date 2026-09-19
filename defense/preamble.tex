@@ -1,0 +1,52 @@
+%%% ---------------------------------------------------------------------------
+%%% preamble.tex —— 你自己的宏包与自定义命令
+%%%
+%%% 主题（common/beamerthemeAcad.sty）已经载入：
+%%%   fontspec / unicode-math / acadmath / amsmath / mathtools
+%%%   graphicx / booktabs / array / translator / appendixnumberbeamer
+%%% 并提供了 evidence 环境、\takeaway、\backuplink、\returnbutton。
+%%% **不要载入 enumitem**，它会破坏 \item<2-> 覆盖语法。
+%%% ---------------------------------------------------------------------------
+
+\usepackage[
+  backend     = biber,
+  style       = gb7714-2015,
+  maxbibnames = 3,
+  minbibnames = 3,
+  giveninits  = true,
+  doi = false, isbn = false, url = false,
+]{biblatex}
+
+%%% ---- 节页 ----
+%%% 答辩里节页比会议报告更值得留：它给委员会一个喘息点，也给你一个
+%%% 「上一块讲完了」的自然停顿。不想要就注释掉。
+\AtBeginSection[]{%
+  \begin{frame}[plain, noframenumbering]
+    \sectionpage
+  \end{frame}%
+}
+
+%%% ---- 本答辩专用记号（与论文保持一致）----
+\newcommand{\ourmethod}{MSFF-Net}
+\newcommand{\ourmethodtwo}{SPR-Head}
+\newcommand{\dataset}{DOTA-v2.0}
+\newcommand{\featmap}{\mat{F}}
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\params}{\vect{\theta}}
+
+%%% ---- 占位图 ----
+\newcommand{\placeholder}[3]{%
+  \begingroup
+    \fboxsep=0pt \fboxrule=0.4pt
+    \fbox{\parbox[c][#2][c]{\dimexpr#1-2\fboxrule\relax}{\centering\footnotesize\ttfamily\color{AcadMuted}#3}}%
+  \endgroup
+}
+
+%%% ---- 演讲备注 ----
+%%% 答辩强烈建议写备注：紧张时讲稿是唯一的锚。用 make notes 生成双屏版。
+\ifdefined\AcadShowNotes
+  \usepackage{pgfpages}
+  \setbeameroption{show notes on second screen = right}
+\else
+  \setbeameroption{hide notes}
+\fi

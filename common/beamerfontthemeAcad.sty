@@ -1,0 +1,50 @@
+%%% ---------------------------------------------------------------------------
+%%% beamerfontthemeAcad.sty —— 字号与字形
+%%%
+%%% 改字体大小只动这个文件。
+%%%
+%%% 学术报告的字号下限约等效 20 pt：16:9 版面下 beamer 的 \normalsize
+%%% 已经接近这个值，因此**不要**为了多塞内容而调小正文。内容放不下时
+%%% 应当拆帧，而不是缩字号。
+%%%
+%%% 中文用无衬线（黑体一类）在投影下的可读性明显优于宋体，故正文取
+%%% \sffamily；若你偏好衬线，把最后一节的注释打开。
+%%% ---------------------------------------------------------------------------
+\ProvidesPackage{beamerfontthemeAcad}[2026/07/26 v1.0 Acad font theme]
+\mode<presentation>
+
+%%% ---- 标题页 ----
+\setbeamerfont{title}     {size = \LARGE, series = \bfseries}
+\setbeamerfont{subtitle}  {size = \normalsize, series = \mdseries}
+\setbeamerfont{author}    {size = \normalsize}
+\setbeamerfont{institute} {size = \small}
+\setbeamerfont{date}      {size = \small}
+
+%%% ---- 帧标题 ----
+\setbeamerfont{frametitle}    {size = \large, series = \bfseries}
+\setbeamerfont{framesubtitle} {size = \small, series = \mdseries}
+
+%%% ---- 结构 ----
+\setbeamerfont{section in toc}    {size = \normalsize, series = \bfseries}
+\setbeamerfont{subsection in toc} {size = \small,      series = \mdseries}
+\setbeamerfont{section page}      {size = \Large,      series = \bfseries}
+
+%%% ---- Block ----
+\setbeamerfont{block title}         {size = \normalsize, series = \bfseries}
+\setbeamerfont{block title alerted} {size = \normalsize, series = \bfseries}
+\setbeamerfont{block title example} {size = \normalsize, series = \bfseries}
+
+%%% ---- 页脚与图表标题 ----
+\setbeamerfont{footline} {size = \scriptsize}
+\setbeamerfont{caption}  {size = \small}
+\setbeamerfont{caption name}{series = \bfseries}
+\setbeamerfont{bibliography item} {size = \footnotesize}
+\setbeamerfont{bibliography entry author}{size = \footnotesize}
+\setbeamerfont{bibliography entry title} {size = \footnotesize, series = \mdseries}
+\setbeamerfont{bibliography entry note}  {size = \footnotesize}
+
+%%% ---- 正文字形 ----
+% 默认无衬线。若要改成衬线正文，把下面一行注释掉，换成 \setbeamerfont{normal text}{family=\rmfamily}
+\renewcommand{\familydefault}{\sfdefault}
+
+\mode<all>

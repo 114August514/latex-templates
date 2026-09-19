@@ -1,0 +1,99 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 结果分析与误差讨论
+%%%
+%%% 这一节是实验报告拉开差距的地方。合格的分析要回答三个问题：
+%%%   1. 观察到的差异**超出随机波动**了吗？（定量判断，不是「明显更好」）
+%%%   2. 差异的**来源**是什么？（机制解释，不是复述数字）
+%%%   3. 有哪些**系统误差**没有被消掉？（诚实列出，比藏起来得分高）
+%%% ---------------------------------------------------------------------------
+\section{结果分析与误差讨论}
+\label{sec:analysis}
+
+\subsection{差异的显著性}
+\label{sec:analysis:significance}
+
+由\cref{tab:summary}，SGD-M 与 AdamW 的测试准确率之差为
+
+\begin{equation}
+  \label{eq:diff}
+  \Delta = \qty{94.82}{\percent} - \qty{94.56}{\percent} = \qty{0.26}{\percent},
+\end{equation}
+
+其合成不确定度按方和根法则
+
+\begin{equation}
+  \label{eq:combined-u}
+  u(\Delta) = \sqrt{u_1^2 + u_2^2}
+    = \sqrt{0.07^2 + 0.06^2} = \qty{0.09}{\percent}.
+\end{equation}
+
+$\Delta / u(\Delta) \approx 2.9 > 2$，即差异约为不确定度的 3 倍，
+可以认为 SGD-M 优于 AdamW 是真实的而非随机波动。
+
+相比之下，Adam 与 AdamW 之差为 $\qty{1.35}{\percent}$，
+$u = \qty{0.09}{\percent}$，比值约 15，差异极为显著。
+
+\subsection{差异的来源}
+\label{sec:analysis:mechanism}
+
+结果可以归结为两条机制：
+
+\begin{enumerate}
+  \item \textbf{收敛速度与泛化的权衡。} 自适应方法（Adam、AdamW）达到
+        \qty{90}{\percent} 只需约 19 轮，比 SGD-M 的 32 轮快
+        \qty{40}{\percent}，但最终准确率更低。这与\cref{eq:adam} 中
+        按坐标缩放梯度会削弱隐式正则化的解释一致。
+
+  \item \textbf{权重衰减的实现方式。} Adam 与 AdamW 仅差
+        \cref{eq:adamw} 的一项，测试准确率却差 \qty{1.35}{\percent}。
+        这说明在 Adam 里把权重衰减混进梯度会被二阶矩重新缩放，
+        实际强度远小于名义值\cite{loshchilov2019adamw}。
+\end{enumerate}
+
+\subsection{误差来源分析}
+\label{sec:analysis:error}
+
+\begin{table}[htbp]
+  \centering
+  \caption{误差来源及其处理}
+  \label{tab:error}
+  \begin{tabular}{lll}
+    \toprule
+    {来源} & {类型} & {处理方式} \\
+    \midrule
+    随机初始化与数据顺序 & 随机误差 & 5 次重复取均值，按 A 类评定给出不确定度 \\
+    GPU 非确定性算子     & 随机误差 & 开启 \lstinline|cudnn.deterministic|，残余量已含在重复中 \\
+    验证集划分           & 系统误差 & 三种优化器共用同一划分，差分时抵消 \\
+    超参数未逐一调优     & 系统误差 & \textbf{未消除}，见下 \\
+    单一网络结构         & 系统误差 & \textbf{未消除}，结论不外推 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+需要指出两项\emph{未被消除}的系统误差：
+
+\begin{enumerate}
+  \item 各优化器只在文献推荐值附近做了 5 点学习率扫描（\cref{sec:procedure}
+        第 6 步），并非各自的最优配置。若对 Adam 单独做更细的搜索，
+        差距可能缩小。因此本文的结论应表述为「在常用配置下」，
+        而不是「Adam 本质上更差」。
+
+  \item 全部结论基于 ResNet-18 与 \dataset{}。已有工作表明在 Transformer
+        类结构上自适应方法通常反超，故本结论不能外推到其他结构。
+\end{enumerate}
+
+\subsection{学习率敏感性}
+\label{sec:analysis:lr}
+
+\cref{fig:lr-sweep} 表明，SGD-M 在 $\lr$ 偏离基准 10 倍时准确率下降
+超过 \qty{5}{\percent}，而 Adam 类方法在同样范围内下降不足
+\qty{1.5}{\percent}。这解释了为什么在超参数预算有限时人们仍偏好 Adam：
+它牺牲了约 \qty{1}{\percent} 的上限，换来了对学习率的鲁棒性。
+
+\begin{figure}[htbp]
+  \centering
+  \placeholder{0.62\linewidth}{4.2cm}{figures/lr-sweep.pdf}
+  \caption{测试准确率随学习率的变化（横轴为相对基准的倍数，对数刻度）}
+  \label{fig:lr-sweep}
+\end{figure}

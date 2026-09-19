@@ -1,0 +1,195 @@
+%%% ---------------------------------------------------------------------------
+%%% beamerthemeAcad.sty —— 学术报告主题（主文件）
+%%%
+%%% 按 beamer 官方的主题拆分惯例分成 5 个文件，改样式时各改各的：
+%%%   beamerthemeAcad.sty          本文件：装配 + 字体 + 数学 + 定理
+%%%   beamercolorthemeAcad.sty     配色
+%%%   beamerfontthemeAcad.sty      字号字形
+%%%   beamerinnerthemeAcad.sty     标题页、节页、列表符号、block、图表标题
+%%%   beamerouterthemeAcad.sty     页边距、帧标题栏、页脚
+%%%
+%%% 用法：\usetheme[lang=zh, fontset=fandol]{Acad}
+%%%
+%%% 主题选项：
+%%%   lang    = zh | en        影响定理名（定理/Theorem）与目录标题
+%%%   fontset = fandol | noto | none
+%%%             注意要与 \documentclass 的 fontset 配套，见 main.tex 的说明
+%%%   mathstyle = iso | tex    同 article 模板，依据 GB/T 3101
+%%% ---------------------------------------------------------------------------
+\ProvidesPackage{beamerthemeAcad}[2026/07/26 v1.0 Acad academic presentation theme]
+
+\RequirePackage{kvoptions}
+\RequirePackage{etoolbox}
+\SetupKeyvalOptions{family=Acad, prefix=Acad@}
+\DeclareStringOption[zh]{lang}
+\DeclareStringOption[fandol]{fontset}
+\DeclareStringOption[iso]{mathstyle}
+\DeclareStringOption[talk]{mode}      % talk（会议报告）| defense（答辩）
+\ProcessKeyvalOptions*
+
+\newcommand{\Acad@ifzh}[2]{\ifdefstring{\Acad@lang}{zh}{#1}{#2}}
+
+% 答辩模式：页脚把「作者」换成「当前在第几节·节标题」。
+% 理由是答辩时委员会已经知道你是谁，他们想知道的是你讲到哪了、还剩多少。
+% 这个布尔量在装配子主题**之前**建好，outer 主题会读它。
+\newbool{Acad@defense}
+\ifdefstring{\Acad@mode}{defense}{\booltrue{Acad@defense}}{}
+
+%%% ===========================================================================
+%%% 1. 装配四个子主题
+%%% ===========================================================================
+\usecolortheme{Acad}
+\usefonttheme{Acad}
+\useinnertheme{Acad}
+\useoutertheme{Acad}
+
+%%% ===========================================================================
+%%% 2. 字体
+%%%    西文按文件名查找 TeX Gyre，不依赖 fontconfig，跨机器可复现。
+%%%    中文由 \documentclass 的 fontset 决定；fontset=noto 时由本文件接管，
+%%%    此时 \documentclass 必须写 fontset=none。
+%%% ===========================================================================
+\RequirePackage{fontspec}
+
+\setsansfont{texgyreheros}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic, Ligatures = TeX,
+]
+\setmainfont{texgyretermes}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic, Ligatures = TeX,
+]
+\setmonofont{texgyrecursor}[
+  Extension = .otf, UprightFont = *-regular, BoldFont = *-bold,
+  ItalicFont = *-italic, BoldItalicFont = *-bolditalic,
+  Ligatures = TeX, Scale = MatchLowercase,
+]
+
+\ifdefstring{\Acad@fontset}{noto}{%
+  \setCJKmainfont{Noto Serif CJK SC}[
+    BoldFont = {Noto Serif CJK SC Bold}, ItalicFont = {Noto Serif CJK SC}]%
+  \setCJKsansfont{Noto Sans CJK SC}[
+    BoldFont = {Noto Sans CJK SC Bold},  ItalicFont = {Noto Sans CJK SC}]%
+  \setCJKmonofont{Sarasa Mono SC}%
+  \newCJKfontfamily[zhhei]\heiti{Noto Sans CJK SC}[BoldFont = {Noto Sans CJK SC Bold}]%
+  \newCJKfontfamily[zhsong]\songti{Noto Serif CJK SC}%
+}{}
+\providecommand{\heiti}{\sffamily\bfseries}
+\providecommand{\songti}{\rmfamily}
+
+%%% ===========================================================================
+%%% 3. 数学
+%%%    与 article 模板用同一个数学字体，保证论文与报告的公式外观一致。
+%%%    若偏好无衬线数学（与幻灯片正文更协调），把字体换成
+%%%    texgyredejavu-math.otf 即可。
+%%% ===========================================================================
+\RequirePackage{amsmath}
+\RequirePackage{mathtools}
+\RequirePackage{unicode-math}
+\ifdefstring{\Acad@mathstyle}{iso}
+  {\unimathsetup{math-style = ISO, bold-style = ISO}}
+  {\unimathsetup{math-style = TeX, bold-style = TeX}}
+\setmathfont{texgyretermes-math.otf}
+
+\RequirePackage{acadmath}      % 共享记号，来自 ../common/
+
+%%% ===========================================================================
+%%% 4. 定理环境
+%%%    beamer 自带 theorem/lemma/… 环境，名字走 translator 宏包。
+%%%    中文报告直接覆盖英文译名即可，不必另建环境。
+%%% ===========================================================================
+\RequirePackage{translator}
+\setbeamertemplate{theorems}[numbered]
+
+\Acad@ifzh{%
+  \deftranslation[to=english]{Theorem}{定理}%
+  \deftranslation[to=english]{Theorems}{定理}%
+  \deftranslation[to=english]{Lemma}{引理}%
+  \deftranslation[to=english]{Lemmas}{引理}%
+  \deftranslation[to=english]{Corollary}{推论}%
+  \deftranslation[to=english]{Corollaries}{推论}%
+  \deftranslation[to=english]{Definition}{定义}%
+  \deftranslation[to=english]{Definitions}{定义}%
+  \deftranslation[to=english]{Proof}{证明}%
+  \deftranslation[to=english]{Example}{例}%
+  \deftranslation[to=english]{Examples}{例}%
+  \deftranslation[to=english]{Fact}{事实}%
+  \deftranslation[to=english]{Problem}{问题}%
+  \deftranslation[to=english]{Solution}{解}%
+  \deftranslation[to=english]{Remark}{注}%
+  \deftranslation[to=english]{Table of Contents}{目录}%
+  \deftranslation[to=english]{Figure}{图}%
+  \deftranslation[to=english]{Table}{表}%
+}{}
+
+%%% ===========================================================================
+%%% 5. 学术报告的通行约定
+%%% ===========================================================================
+% 附录（备用页）不计入总页数，避免页脚显示成 "12/45" 误导听众
+\RequirePackage{appendixnumberbeamer}
+
+% 图表
+\RequirePackage{graphicx}
+\graphicspath{{figures/}{./}}
+\RequirePackage{booktabs}
+\RequirePackage{array}
+
+% 注意：这里**故意不载入 enumitem**。它会破坏 beamer 的 \item<2-> 覆盖语法，
+% 是 beamer 用户最常踩的坑之一。要调列表间距，用下面这种写法：
+%   \begin{itemize}\setlength{\itemsep}{0.6em} ... \end{itemize}
+
+%%% ===========================================================================
+%%% 6. Assertion-Evidence 支持
+%%%
+%%%    这是 Michael Alley（Penn State）提出并做过对照实验的幻灯片结构：
+%%%    标题写成一句**完整的断言**，正文放**一块视觉证据**，而不是
+%%%    「名词短语标题 + 一串 bullet」。实验测到的差异在于听众的理解与留存。
+%%%    详见 references/presenting.md。
+%%%
+%%%    用法：
+%%%      \begin{frame}{门控使小目标 AP 提升 6.2 个百分点}
+%%%        \begin{evidence}
+%%%          \includegraphics[width=0.8\linewidth]{ablation}
+%%%        \end{evidence}
+%%%        \takeaway{增益集中在小目标，说明提升来自特征保留而非分类能力}
+%%%      \end{frame}
+%%%
+%%%    这里**故意不提供** \aeframe{}{} 这种把整个 frame 包进宏的写法——
+%%%    beamer 的 frame 被宏包住后，覆盖语法与 [fragile] 都容易出问题。
+%%% ===========================================================================
+
+% 证据区：把主视觉在剩余空间里垂直居中并占满宽度
+\newenvironment{evidence}{%
+  \vfill\begin{center}%
+}{%
+  \end{center}\vfill%
+}
+
+% 一句话结论条，压在证据下面。只放**一句**，多了就失去作用。
+\newcommand{\takeaway}[1]{%
+  \par\vspace{0.4em}%
+  {\usebeamercolor[fg]{structure}\rule{\linewidth}{0.6pt}}%
+  \par\vspace{0.35em}%
+  {\small\usebeamercolor[fg]{normal text}#1\par}%
+}
+
+%%% ===========================================================================
+%%% 7. 备用页的跳转
+%%%    答辩问答环节的实用件：正文里放一个索引页，点条目直接跳到对应备用页；
+%%%    备用页角上放一个返回按钮跳回来。
+%%%
+%%%    用法：
+%%%      备用页：  \begin{frame}[label=bk:deriv]{完整推导}...\returnbutton{main:end}\end{frame}
+%%%      索引页：  \begin{frame}[label=main:end]{备用页索引}
+%%%                  \backuplink{bk:deriv}{完整推导}
+%%%                \end{frame}
+%%%    靠的是 beamer 自带的 [label=] 会建立跳转目标，没有额外机制。
+%%% ===========================================================================
+\newcommand{\backuplink}[2]{%
+  \par\hyperlink{#1}{\beamergotobutton{#2}}\vspace{0.35em}%
+}
+\newcommand{\returnbutton}[1]{%
+  \hfill\hyperlink{#1}{\beamerreturnbutton{\Acad@ifzh{返回}{Back}}}%
+}
+
+\mode<all>

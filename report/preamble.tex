@@ -1,0 +1,66 @@
+%%% ---------------------------------------------------------------------------
+%%% preamble.tex —— 你自己的宏包与自定义命令
+%%%
+%%% 类文件（经 ../common/acadbase.sty）已经载入了：
+%%%   ctex / fontspec / geometry / unicode-math / acadmath / amsmath / mathtools
+%%%   graphicx / booktabs / array / multirow / makecell / longtable / threeparttable
+%%%   caption / subcaption / float / algorithm / algpseudocode / amsthm
+%%%   biblatex / fancyhdr / xcolor / hyperref / bookmark / cleveref
+%%%   enumitem / url / microtype / comment
+%%% 不要重复载入，尤其不要重新载入 hyperref。
+%%% ---------------------------------------------------------------------------
+
+%%% ---- 代码清单 ----
+%%% 实验报告常要贴关键代码。listings 比 minted 省事（minted 需要 -shell-escape
+%%% 和 Python 的 Pygments），够用就好。
+%%%
+%%% 代码里的中文注释：listings 是逐字符 verbatim 处理的，中文能不能正常出来
+%%% 取决于 extendedchars 与等宽 CJK 字体。下面已设 extendedchars=true。
+%%% 如果编译后中文注释还是乱的，加上 texcl=true 让注释交给 TeX 排版
+%%% （代价是注释里不能再出现 \ { } $ 等 TeX 特殊字符）。
+\usepackage{listings}
+\lstset{
+  basicstyle    = \ttfamily\footnotesize,
+  keywordstyle  = \color{acadlink}\bfseries,
+  commentstyle  = \color{gray}\itshape,
+  stringstyle   = \color{acadurl},
+  numbers       = left,
+  numberstyle   = \tiny\color{gray},
+  numbersep     = 8pt,
+  frame         = single,
+  rulecolor     = \color{gray!40},
+  breaklines    = true,
+  breakatwhitespace = true,
+  showstringspaces  = false,
+  tabsize       = 4,
+  columns       = flexible,
+  captionpos    = b,
+  % 让代码块里的中文注释不乱码
+  extendedchars = true,
+  literate      = {－}{{-}}1,
+}
+\renewcommand{\lstlistingname}{代码}
+
+%%% ---- 按需追加的宏包 ----
+% \usepackage{pgfplots}\pgfplotsset{compat=1.18}   % 直接用 LaTeX 画数据图
+% \usepackage{siunitx}  % 已由 acadmath 载入，不要重复
+
+%%% ---- 本报告专用的记号 ----
+\newcommand{\dataset}{CIFAR-10}
+\newcommand{\loss}{\mathcal{L}}
+\newcommand{\params}{\vect{\theta}}
+\newcommand{\lr}{\eta}
+
+%%% ---- 占位图 ----
+%%% 只为让模板在没有图片时也能编译；真正插图时改用
+%%% \includegraphics[width=0.8\linewidth]{loss-curve}
+\newcommand{\placeholder}[3]{%
+  \begingroup
+    \fboxsep=0pt \fboxrule=0.4pt
+    \fbox{\parbox[c][#2][c]{\dimexpr#1-2\fboxrule\relax}{\centering\footnotesize\ttfamily\color{gray}#3}}%
+  \endgroup
+}
+
+%%% ---- 若要覆盖类文件里的样式，写在这里 ----
+% 例：一级标题改成「一、二、三」的传统写法
+% \ctexset{section = {name = {,、}, number = \chinese{section}, aftername = {}}}

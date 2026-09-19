@@ -1,0 +1,54 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 结论与创新点
+%%%
+%%% 目标页数：2 页。
+%%% 「创新点」是答辩独有的一节，会议报告没有。委员会要拿它对照
+%%% 学位授予标准，所以要写得能被逐条核对：
+%%%   · 条数控制在 2~3 条，多了显得每条都不够分量
+%%%   · 每条的句式是「针对……问题，提出了……，实现了……（带数据）」
+%%%   · 每条都要能指回前面某一页
+%%%
+%%% 主动写局限。委员会一定会问，你先说出来，主动权就在自己手里；
+%%% 等被问出来，性质就变成「你没想到」。
+%%% ---------------------------------------------------------------------------
+\section{结论与创新点}
+
+\begin{frame}{主要创新点}
+  \begin{enumerate}
+    \setlength{\itemsep}{1.0em}
+    \item 针对特征金字塔融合权重空间均匀的问题，提出跨层注意力门控，
+          在 \dataset{} 上使小目标 AP 提升 \qty{4.1}{\percent}，
+          且被证明是标准 FPN 的严格推广；
+    \item 针对相邻层级感受野未对齐的问题，提出可变形对齐算子，
+          与门控串联后总体 mAP 提升 \qty{3.7}{\percent}、
+          小目标 AP 提升 \qty{6.2}{\percent}，推理速度保持 \qty{31}{\fps}。
+  \end{enumerate}
+  \takeaway{两点创新分别对应研究现状一节指出的两个具体问题}
+\end{frame}
+
+\begin{frame}{工作的局限与后续方向}
+  \begin{columns}[T, onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \textbf{局限}
+      \begin{itemize}
+        \setlength{\itemsep}{0.6em}
+        \item 方差不增依赖独立性假设，层间强相关时界会变松
+        \item 仅在光学遥感影像上验证，未覆盖 SAR 等模态
+        \item 各对比方法未逐一精细调优
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{后续}
+      \begin{itemize}
+        \setlength{\itemsep}{0.6em}
+        \item 引入显式尺度先验替代通道统计量
+        \item 在多模态遥感数据上验证迁移能力
+        \item 扩大重复次数以收紧不确定度
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \note{这一页是防守的核心。语气要平稳，不要道歉式地说
+        「做得还不够好」——就是陈述边界。委员会看重的是你知道边界在哪。}
+\end{frame}

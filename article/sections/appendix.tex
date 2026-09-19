@@ -1,0 +1,50 @@
+% !TeX root = ../main.tex
+%%% ---------------------------------------------------------------------------
+%%% 附录
+%%%
+%%% 位置：参考文献**之后**（GB/T 7713）。main.tex 里的 \appendix 已经把
+%%% 编号切成「附录 A」，图表公式自动变成 图 A1 / 表 A1 / 式 (A1)。
+%%%
+%%% 放什么：过长的推导、完整的参数表、补充数据——凡是放正文会打断阅读、
+%%% 但审稿人可能需要核对的内容。
+%%% ---------------------------------------------------------------------------
+
+\section{方差上界的紧性讨论}
+\label{app:tightness}
+
+\cref{thm:variance} 给出的界在 $g \in \setof{0, 1}$ 时取到等号。对
+$g \in (0,1)$，由\cref{eq:var-expand} 可以进一步给出
+
+\begin{equation}
+  \label{eq:tight}
+  \Var\!\left[\featmap_l'\right]
+    \ge \frac{\sigma_1^2 \sigma_2^2}{\sigma_1^2 + \sigma_2^2},
+\end{equation}
+
+等号在 $g^{*} = \sigma_2^2 / (\sigma_1^2 + \sigma_2^2)$ 处取得。这说明
+门控不仅不放大方差，在中间取值处实际上起到了方差收缩的作用。
+
+\section{完整超参数配置}
+\label{app:hyperparams}
+
+\begin{table}[htbp]
+  \centering
+  \caption{完整的训练超参数}
+  \label{tab:hyperparams}
+  \begin{tabular}{l l}
+    \toprule
+    {超参数} & {取值} \\
+    \midrule
+    优化器            & SGD（动量 \num{0.9}） \\
+    初始学习率        & \num{0.01} \\
+    学习率策略        & 余弦退火，预热 \num{500} 步 \\
+    权重衰减          & \num{1e-4} \\
+    批大小            & 16（每卡 4） \\
+    训练轮数          & \qty{36}{\epoch} \\
+    输入尺寸          & $1024 \times 1024$ \\
+    数据增强          & 随机水平/垂直翻转、随机旋转 $90^{\circ}$ \\
+    门控压缩比 $r$    & 16 \\
+    损失权重 $\lambda$ & \num{1.0} \\
+    \bottomrule
+  \end{tabular}
+\end{table}

@@ -1,0 +1,84 @@
+%%% ---------------------------------------------------------------------------
+%%% beamerouterthemeAcad.sty —— 帧的外框
+%%%
+%%% 管：页边距、帧标题栏、页脚、导航元素。
+%%% 帧内部元素（标题页、列表符号、block）在 beamerinnerthemeAcad.sty 里。
+%%% ---------------------------------------------------------------------------
+\ProvidesPackage{beamerouterthemeAcad}[2026/07/26 v1.0 Acad outer theme]
+\mode<presentation>
+
+%%% ===========================================================================
+%%% 页边距
+%%% ===========================================================================
+\newlength{\Acadmargin}
+\setlength{\Acadmargin}{1.6em}
+\setbeamersize{text margin left = \Acadmargin, text margin right = \Acadmargin}
+
+%%% ===========================================================================
+%%% 去掉一切装饰性导航
+%%% 右下角的导航按钮在投影时没有任何用处，还会分散注意力。
+%%% ===========================================================================
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{sidebar left}{}
+\setbeamertemplate{sidebar right}{}
+
+%%% ===========================================================================
+%%% 帧标题：标题 +（可选副标题）+ 一条分隔线
+%%% ===========================================================================
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd = \paperwidth, sep = 0pt,
+                         leftskip = \Acadmargin, rightskip = \Acadmargin]{frametitle}
+    \vskip 1.1ex
+    {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}%
+    \ifx\insertframesubtitle\@empty\else
+      \vskip 0.2ex
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
+        \insertframesubtitle\par}%
+    \fi
+    \vskip 0.9ex
+  \end{beamercolorbox}%
+  \nointerlineskip
+  \hbox{{\usebeamercolor[fg]{separation line}\rule{\paperwidth}{0.8pt}}}%
+  \vskip 1.2ex
+}
+
+%%% ===========================================================================
+%%% 页脚：左 | 短标题 | 页码 n/N
+%%% 三块宽度之和必须等于 \paperwidth。
+%%% 页码用 n/N 是为了让听众提问时能报出位置。
+%%%
+%%% 左格的内容随主题的 mode 选项变：
+%%%   talk    → 作者名（会场里听众未必认识你）
+%%%   defense → 当前节标题（委员会知道你是谁，他们想知道你讲到哪了）
+%%% ===========================================================================
+\RequirePackage{etoolbox}
+\providebool{Acad@defense}          % 单独载入 outer 主题时也不会报未定义
+
+\setbeamertemplate{footline}{%
+  \hbox{%
+    \begin{beamercolorbox}[wd = 0.34\paperwidth, ht = 2.6ex, dp = 1.4ex,
+                           left, leftskip = \Acadmargin]{footline}
+      \usebeamerfont{footline}%
+      \ifbool{Acad@defense}
+        {\ifnum\value{section}>0 \insertsectionnumber.~\insertsectionhead\fi}
+        {\insertshortauthor}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd = 0.46\paperwidth, ht = 2.6ex, dp = 1.4ex,
+                           center]{footline}
+      \usebeamerfont{footline}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd = 0.20\paperwidth, ht = 2.6ex, dp = 1.4ex,
+                           right, rightskip = \Acadmargin]{footline}
+      \usebeamerfont{footline}%
+      \insertframenumber\,/\,\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+  \vskip 0pt
+}
+
+%%% 帧标题续页标记（\begin{frame}[allowframebreaks] 时出现），只从第二页起标
+\setbeamertemplate{frametitle continuation}[from second]
+
+\mode<all>
