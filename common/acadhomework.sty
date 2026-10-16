@@ -1,13 +1,147 @@
 \NeedsTeXFormat{LaTeX2e}[2021/06/01]
-\ProvidesPackage{acadhomework}[2026/09/20 Homework structure]
+\ProvidesPackage{acadhomework}[2026/10/15 Homework structure with subproblems and cut-out frame]
+
 \RequirePackage{needspace}
-% 按题分节：「问题 1 …」。课程专用记号写在 preamble.tex，不要堆进本文件。
-\ctexset{
-  section/name={问题,},
-  section/format=\zihao{-2}\heiti\raggedright\color{\acad@headingcolor},
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% 按题分节标题设置（如果使用独立 \section）
+\acad@ifzh{%
+  \ctexset{
+    section/name={问题,},
+    section/format=\zihao{-2}\heiti\raggedright\color{\acad@headingcolor},
+  }%
+}{%
+  \ctexset{
+    section/name={Problem~,},
+    section/format=\Large\bfseries\sffamily\raggedright\color{\acad@headingcolor},
+  }%
 }
-\newcommand{\problem}[2][]{%
-  \Needspace{5\baselineskip}%
-  \if\relax\detokenize{#1}\relax\section{#2}\else\section{#2（#1 分）}\fi}
-\newenvironment{solution}{\par\medskip\noindent\textbf{解答}\par\nobreak}{\par\medskip}
+
+% 题框计数器（关联 section）
+\newcounter{acadproblem}
+\renewcommand{\theacadproblem}{\arabic{acadproblem}}
+
+% 统一步长与垂直节奏（舒适的公式与文本留白）
+\setlength{\abovedisplayskip}{10pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{10pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{5pt plus 2pt}
+\setlength{\belowdisplayshortskip}{6pt plus 2pt}
+
+% 顶线嵌入式标题框样式（极简克制，参考经典常微作业排版）
+\tcbset{
+  acadproblemframestyle/.style={
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=\acad@headingcolor,
+    boxrule=0.75pt,
+    arc=0pt,
+    outer arc=0pt,
+    top=7pt,
+    bottom=7pt,
+    left=9pt,
+    right=9pt,
+    before skip=14pt plus 2pt minus 2pt,
+    after skip=9pt plus 2pt minus 1pt,
+    attach boxed title to top left={yshift*=-\tcboxedtitleheight/2, xshift=10pt},
+    boxed title style={
+      colback=white,
+      colframe=white,
+      boxrule=0pt,
+      arc=0pt,
+      outer arc=0pt,
+      left=3pt,
+      right=3pt,
+      top=0pt,
+      bottom=0pt,
+    },
+    coltitle=\acad@headingcolor,
+    fonttitle=\heiti\bfseries,
+  }
+}
+
+% \begin{problem}[分值]{标题} ... \end{problem}
+% 嵌入式标题顶线框，自动生成 section 目录与书签
+\NewDocumentEnvironment{problem}{o m}{%
+  \refstepcounter{section}%
+  \refstepcounter{acadproblem}%
+  \needspace{4\baselineskip}%
+  \def\acad@currtitle{%
+    \acad@ifzh{题目~\theacadproblem\quad #2}{Problem~\theacadproblem\quad #2}%
+    \IfValueT{#1}{\acad@ifzh{（#1 分）}{ (#1 pts)}}%
+  }%
+  \addcontentsline{toc}{section}{\acad@currtitle}%
+  \begin{tcolorbox}[acadproblemframestyle, title={\acad@currtitle}]%
+}{%
+  \end{tcolorbox}%
+}
+
+% 保留宏版本 \problemcmd[分值]{标题} 供纯文字标题备用
+\NewDocumentCommand{\problemcmd}{o m}{%
+  \needspace{4\baselineskip}%
+  \IfValueTF{#1}{%
+    \acad@ifzh{\section{#2（#1 分）}}{\section{#2 (#1 pts)}}%
+  }{%
+    \section{#2}%
+  }%
+}
+
+% 大题题干卡片 prompt 盒
+\newtcolorbox{prompt}{acadproblemframestyle}
+
+% 小问计数器（按 section 自动清零）
+\newcounter{acadsubproblem}[section]
+\renewcommand{\theacadsubproblem}{(\arabic{acadsubproblem})}
+
+% 逐问作答环境：管理小问区域与垂直间距
+\newenvironment{subproblems}{%
+  \setcounter{acadsubproblem}{0}%
+  \par\addvspace{2pt}%
+}{%
+  \par\addvspace{6pt}%
+}
+
+% 小问：纯黑正体，仅编号加粗，分值正体，无多余底色与跳跃缩进
+\NewDocumentCommand{\subproblem}{o +m}{%
+  \refstepcounter{acadsubproblem}%
+  \needspace{3\baselineskip}%
+  \par\addvspace{10pt plus 2pt minus 1pt}%
+  \noindent\textbf{\theacadsubproblem}%
+  \IfValueT{#1}{\textnormal{\acad@ifzh{（#1分）}{\ (#1~pts)}}}\quad
+  \ignorespaces#2\par\nobreak
+  \vspace{5pt}%
+}
+
+% 解答结束符智能判断（若内部已有 proof 证毕符，则不重复打印小方块）
+\newbool{acad@needqed}
+\AtBeginEnvironment{proof}{\global\boolfalse{acad@needqed}}
+
+% 紧凑优雅的 solution：解：紧贴文字，纯黑正文，末尾防重 QED
+\NewDocumentEnvironment{solution}{}{%
+  \global\booltrue{acad@needqed}%
+  \par\addvspace{5pt plus 1pt minus 1pt}\noindent
+  \acad@ifzh{\textbf{解：}}{\textbf{Solution.\ }}\ignorespaces
+}{%
+  \ifbool{acad@needqed}{\hfill\ensuremath{\qedsymbol}}{}%
+  \par\addvspace{12pt plus 3pt minus 2pt}%
+}
+
+% cleveref 中文/西文支持
+\acad@ifzh{%
+  \AtBeginDocument{%
+    \crefname{acadsubproblem}{小问}{小问}%
+    \Crefname{acadsubproblem}{小问}{小问}%
+    \crefformat{acadsubproblem}{#2小问~#1#3}%
+    \Crefformat{acadsubproblem}{#2小问~#1#3}%
+  }%
+}{%
+  \AtBeginDocument{%
+    \crefname{acadsubproblem}{part}{parts}%
+    \Crefname{acadsubproblem}{Part}{Parts}%
+    \crefformat{acadsubproblem}{#2part~#1#3}%
+    \Crefformat{acadsubproblem}{#2Part~#1#3}%
+  }%
+}
+
 \endinput

@@ -212,7 +212,27 @@
 \newtheorem{example}[theorem]{\acad@n@example}
 \newtheorem{remark}[theorem]{\acad@n@remark}
 
-\renewcommand{\proofname}{\acad@n@proof}
+\acad@ifzh{%
+  \renewenvironment{proof}[1][\proofname]{%
+    \par
+    \pushQED{\qed}%
+    \normalfont \topsep6\p@\@plus6\p@\relax
+    \trivlist
+    \item[\hskip\labelsep\heiti\bfseries #1：]\ignorespaces
+  }{%
+    \popQED\endtrivlist\@endpefalse
+  }%
+}{%
+  \renewenvironment{proof}[1][\proofname]{%
+    \par
+    \pushQED{\qed}%
+    \normalfont \topsep6\p@\@plus6\p@\relax
+    \trivlist
+    \item[\hskip\labelsep\bfseries #1.\ ]\ignorespaces
+  }{%
+    \popQED\endtrivlist\@endpefalse
+  }%
+}
 
 %%% ===========================================================================
 %%% 7. 参考文献
@@ -247,7 +267,7 @@
 \definecolor{acadlink}{RGB}{0,60,120}
 \definecolor{acadcite}{RGB}{0,90,60}
 \definecolor{acadurl} {RGB}{120,40,20}
-\definecolor{acadhead}{RGB}{0,0,128}   % 标题色
+\definecolor{acadhead}{RGB}{28,96,169}   % 人教版教材内页青蓝 (#1C60A9)
 \ifacad@print
   \definecolor{acadlink}{RGB}{0,0,0}
   \definecolor{acadcite}{RGB}{0,0,0}

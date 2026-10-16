@@ -1,15 +1,23 @@
 % !TeX root = ../main.tex
-%%% 计算用 solution；题目要证明时在解答里再套 proof。
-\problem[10]{前 n 项和}
+%%% 单问大题：嵌入式顶线框
+\begin{problem}[10]{前 $n$ 项和公式与证明}
 \label{sec:sum}
-求 $1+2+\cdots+n$，并证明公式。
+求 $1+2+\cdots+n$，并给出严密的数学归纳法证明。
+\end{problem}
+
 \begin{solution}
 公式为 $\dfrac{n(n+1)}{2}$。
 \begin{proof}
-对 $n$ 归纳。$n=1$ 时两边都是 $1$。
-假设对 $n=k$ 成立，则
+对 $n$ 归纳。当 $n=1$ 时，两边均为 $1$，结论显然成立。
+假设结论对 $n=k$ 成立，则当 $n=k+1$ 时，有：
 \[
-  1+\cdots+(k+1)=\frac{k(k+1)}{2}+(k+1)=\frac{(k+1)(k+2)}{2}.
+\begin{aligned}
+  1+\cdots+(k+1)
+  &= \frac{k(k+1)}{2}+(k+1)\\[6pt]
+  &= \frac{(k+1)(k+2)}{2}.
+\end{aligned}
 \]
+
+由数学归纳法可知，原公式对任意正整数 $n$ 均成立。
 \end{proof}
 \end{solution}

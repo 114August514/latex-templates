@@ -1,0 +1,46 @@
+% !TeX root = ../main.tex
+%%% 多小问大题：逐问作答流示范
+\begin{problem}[20]{实对称矩阵的特征值与正定性}
+\label{sec:matrix}
+设实二次型 $f(x_1, x_2, x_3) = x_1^2 + x_2^2 + x_3^2 + 2x_1 x_2 + 2x_2 x_3 + 2x_3 x_1$ 对应的实对称矩阵为 $A$。
+\end{problem}
+
+\begin{subproblems}
+  \subproblem[8]{%
+    \label{sub:eigen}%
+    求矩阵 $A$ 的全部特征值，并写出对应特征子空间的一组正交基。
+  }
+  \begin{solution}
+    易写出二次型对应的实对称矩阵：
+    \[
+      A = \begin{pmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{pmatrix}.
+    \]
+
+    计算特征多项式得 $\det(\lambda I - A) = \lambda^2(\lambda - 3)$，因此特征值为 $\lambda_1 = 3, \lambda_{2,3} = 0$。
+    
+    对于 $\lambda = 3$，特征子空间基向量为 $(1, 1, 1)^\top$，单位化得：
+    \[
+      \vect{q}_1 = \frac{1}{\sqrt{3}}(1, 1, 1)^\top.
+    \]
+
+    对于重特征值 $\lambda = 0$，解方程 $x_1 + x_2 + x_3 = 0$，施密特正交化并单位化得：
+    \[
+      \vect{q}_2 = \frac{1}{\sqrt{2}}(1, -1, 0)^\top, \quad
+      \vect{q}_3 = \frac{1}{\sqrt{6}}(1, 1, -2)^\top.
+    \]
+  \end{solution}
+
+  \subproblem[12]{%
+    \label{sub:posdef}%
+    判断矩阵 $A$ 是否正定，并求正交矩阵 $P$ 使得 $P^\top A P$ 为对角阵。
+  }
+  \begin{solution}
+    矩阵 $A$ 不是正定矩阵，而是半正定的。
+    因为若实对称阵正定，则其全部特征值必严格大于 $0$；而由 \cref{sub:eigen} 可知 $\lambda_2 = \lambda_3 = 0 \ngtr 0$，故 $A$ 不是正定矩阵。
+
+    取正交矩阵 $P = (\vect{q}_1, \vect{q}_2, \vect{q}_3)$，由 \cref{sub:eigen} 求得的正交基可得：
+    \[
+      P^\top A P = \operatorname{diag}(3, 0, 0).
+    \]
+  \end{solution}
+\end{subproblems}

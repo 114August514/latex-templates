@@ -20,8 +20,10 @@ if dest.exists(): p.error(f'{dest} already exists')
 \\addbibresource{refs.bib}
 '''.replace('NUMBER',args.name[2:]))
 (dest/'sections/01-problem1.tex').write_text('''% !TeX root = ../main.tex
-\\problem{题目}
-在这里填写题目。
+\\begin{problem}{题目}
+在这里填写题目（或大题公共已知条件）。
+\\end{problem}
+
 \\begin{solution}
 在这里填写解答。题目要求证明时，在本环境内再用 proof。
 \\end{solution}

@@ -8,18 +8,50 @@
 电磁学、分析、线代同样用这一套。某门课特有的标题或记号写进该课的
 `preamble.tex`。
 
-## 一道题怎么写
-
+### 单问大题
 ```latex
-\problem[10]{题干一句话}
-题目原文。
+\begin{problem}[10]{题干一句话}
+求 $1+2+\cdots+n$，并给出严密的数学归纳法证明。
+\end{problem}
 
 \begin{solution}
-  % 作答
+公式为 $\dfrac{n(n+1)}{2}$。
+\begin{proof}
+对 $n$ 归纳……
+\end{proof}
 \end{solution}
 ```
 
-`\problem[分数]{标题}` 渲染成「问题 1 标题（10 分）」。分数可省略。
+`\begin{problem}[分数]{标题}` 渲染为顶线嵌入式卡片「题目 1 标题（10 分）」。分数可省略。
+
+### 多小问大题（逐问作答流）
+```latex
+\begin{problem}[20]{大题标题}
+大题背景已知条件……
+\end{problem}
+
+\begin{subproblems}
+  \subproblem[8]{%
+    \label{sub:eigen}%
+    小问 (1) 题干内容。
+  }
+  \begin{solution}
+    小问 (1) 作答内容……
+  \end{solution}
+
+  \subproblem[12]{%
+    小问 (2) 题干内容。
+  }
+  \begin{solution}
+    由 \cref{sub:eigen} 可知……
+  \end{solution}
+\end{subproblems}
+```
+
+- `subproblem` 自动编号为 `(1)`、`(2)` 并附带分值。
+- 支持 `\cref` 自动引用为「小问 (1)」。
+- 纯黑正体与正文自然流转，题解自动紧接「解：」，证明环境自动生成加粗黑体「证明：」，标点统一为国家标准全角冒号。
+- 末尾右对齐空心证毕方块（`solution` 智能规避内部 `proof` 的重复方块）。
 
 | | `solution` | `proof` |
 |---|---|---|
