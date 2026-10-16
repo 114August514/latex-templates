@@ -18,7 +18,13 @@
 TEMPLATES := article report beamer defense homework
 PYTHON    := uv run python
 
-.PHONY: all article report beamer defense homework handout notes preview check setup list-templates clean distclean
+CHECK_TARGETS     := $(addsuffix -check,$(TEMPLATES))
+PREVIEW_TARGETS   := $(addsuffix -preview,$(TEMPLATES))
+CLEAN_TARGETS     := $(addsuffix -clean,$(TEMPLATES))
+DISTCLEAN_TARGETS := $(addsuffix -distclean,$(TEMPLATES))
+
+.PHONY: all article report beamer defense homework handout notes preview check setup list-templates clean distclean \
+        $(CHECK_TARGETS) $(PREVIEW_TARGETS) $(CLEAN_TARGETS) $(DISTCLEAN_TARGETS)
 
 setup:
 	uv sync
@@ -37,20 +43,18 @@ handout:
 notes:
 	$(MAKE) -C beamer notes
 
-preview:
-	@set -e; for d in $(TEMPLATES); do \
-	  echo "===== $$d preview ====="; \
-	  $(MAKE) -C $$d preview; \
-	done
+preview: $(PREVIEW_TARGETS)
+$(PREVIEW_TARGETS): %-preview:
+	$(MAKE) -C $* preview
 
-check:
-	@set -e; for d in $(TEMPLATES); do \
-	  echo "===== $$d ====="; \
-	  $(MAKE) -C $$d check; \
-	done
+check: $(CHECK_TARGETS)
+$(CHECK_TARGETS): %-check:
+	$(MAKE) -C $* check
 
-clean:
-	@set -e; for d in $(TEMPLATES); do $(MAKE) -C $$d clean; done
+clean: $(CLEAN_TARGETS)
+$(CLEAN_TARGETS): %-clean:
+	$(MAKE) -C $* clean
 
-distclean:
-	@set -e; for d in $(TEMPLATES); do $(MAKE) -C $$d distclean; done
+distclean: $(DISTCLEAN_TARGETS)
+$(DISTCLEAN_TARGETS): %-distclean:
+	$(MAKE) -C $* distclean

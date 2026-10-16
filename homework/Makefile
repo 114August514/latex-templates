@@ -1,9 +1,33 @@
 # Run make in the course directory or in an assignment directory.
 ifeq ($(wildcard main.tex),)
 HWS := $(sort $(wildcard hw*/))
-.PHONY: all preview check clean distclean
-all preview check clean distclean:
-	@set -e; for d in $(HWS); do $(MAKE) -C $$d $@; done
+HW_ALL       := $(addprefix all-,$(HWS))
+HW_PREVIEW   := $(addprefix preview-,$(HWS))
+HW_CHECK     := $(addprefix check-,$(HWS))
+HW_CLEAN     := $(addprefix clean-,$(HWS))
+HW_DISTCLEAN := $(addprefix distclean-,$(HWS))
+
+.PHONY: all preview check clean distclean $(HW_ALL) $(HW_PREVIEW) $(HW_CHECK) $(HW_CLEAN) $(HW_DISTCLEAN)
+
+all: $(HW_ALL)
+$(HW_ALL): all-%:
+	$(MAKE) -C $* all
+
+preview: $(HW_PREVIEW)
+$(HW_PREVIEW): preview-%:
+	$(MAKE) -C $* preview
+
+check: $(HW_CHECK)
+$(HW_CHECK): check-%:
+	$(MAKE) -C $* check
+
+clean: $(HW_CLEAN)
+$(HW_CLEAN): clean-%:
+	$(MAKE) -C $* clean
+
+distclean: $(HW_DISTCLEAN)
+$(HW_DISTCLEAN): distclean-%:
+	$(MAKE) -C $* distclean
 else
 # ----------------------------------------------------------------------------
 # homework 单次作业构建

@@ -71,7 +71,12 @@
     \acad@ifzh{题目~\theacadproblem\quad #2}{Problem~\theacadproblem\quad #2}%
     \IfValueT{#1}{\acad@ifzh{（#1 分）}{ (#1 pts)}}%
   }%
-  \addcontentsline{toc}{section}{\acad@currtitle}%
+  \acad@ifzh{%
+    \def\acad@bmtitle{题目 \theacadproblem\space #2\IfValueT{#1}{（#1 分）}}%
+  }{%
+    \def\acad@bmtitle{Problem \theacadproblem\space #2\IfValueT{#1}{ (#1 pts)}}%
+  }%
+  \addcontentsline{toc}{section}{\texorpdfstring{\acad@currtitle}{\acad@bmtitle}}%
   \begin{tcolorbox}[acadproblemframestyle, title={\acad@currtitle}]%
 }{%
   \end{tcolorbox}%
